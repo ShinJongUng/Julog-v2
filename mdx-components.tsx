@@ -68,8 +68,10 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
         {children}
       </ol>
     ),
-    li: ({ children }) => (
-      <li style={{ marginBottom: "0.5rem" }}>{children}</li>
+    li: ({ children, ...props }) => (
+      <li style={{ marginBottom: "0.5rem" }} {...props}>
+        {children}
+      </li>
     ),
     blockquote: ({ children }) => (
       <blockquote
@@ -120,16 +122,32 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
         </code>
       );
     },
-    img: (
-      props // img 태그를 Next.js Image 컴포넌트로 대체
-    ) => (
-      <Image
-        sizes="100vw"
-        fill
-        {...(props as any)} // 타입 단언 추가
-      />
-    ),
-    // 추가적인 커스텀 컴포넌트 정의 가능
+    img: ({ src, alt, width, height, ...rest }) => {
+      // MDX에서 width/height가 문자열로 전달될 수 있으므로 숫자로 변환합니다.
+      const numWidth = typeof width === "string" ? parseInt(width, 10) : width;
+      const numHeight =
+        typeof height === "string" ? parseInt(height, 10) : height;
+
+      // 유효성 검사 또는 기본값 설정
+      // MDX 파일에 width/height 속성이 없는 경우를 대비한 기본값
+      const validWidth =
+        typeof numWidth === "number" && numWidth > 0 ? numWidth : 700;
+      const validHeight =
+        typeof numHeight === "number" && numHeight > 0 ? numHeight : 400;
+
+      return (
+        <span className="my-6 w-full flex justify-center">
+          <Image
+            src={src || ""}
+            alt={alt || "이미지"}
+            width={validWidth}
+            height={validHeight}
+            className="rounded-xl mx-auto max-w-full w-auto h-auto shadow-md "
+            {...rest}
+          />
+        </span>
+      );
+    },
     ...components,
   };
 }

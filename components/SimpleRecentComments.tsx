@@ -3,6 +3,7 @@ import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
 import { getAllPostsMeta } from "@/lib/posts";
+import Image from "next/image";
 
 interface SimpleRecentCommentsProps {
   comments: GiscusComment[];
@@ -115,7 +116,9 @@ export default function SimpleRecentComments({
             className="group block p-3 hover:bg-green-50 dark:hover:bg-green-950 transition-colors rounded-md"
           >
             <div className="flex items-start gap-2">
-              <img
+              <Image
+                width={28}
+                height={28}
                 src={comment.author.avatarUrl}
                 alt={`${comment.author.login}의 아바타`}
                 className="w-7 h-7 rounded-full mt-1 ring-1 ring-gray-200 dark:ring-gray-700"

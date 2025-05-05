@@ -138,9 +138,9 @@ export default function TableOfContents() {
       </AnimatePresence>
 
       <ul className="space-y-2 relative z-10">
-        {headings.map((heading) => (
+        {headings.map((heading, index) => (
           <li
-            key={heading.id}
+            key={index}
             style={{ paddingLeft: `${(heading.level - 1) * 0.75}rem` }}
           >
             <motion.a

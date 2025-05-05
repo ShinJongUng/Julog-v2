@@ -30,3 +30,22 @@
    NEXT_PUBLIC_GISCUS_CATEGORY=General
    NEXT_PUBLIC_GISCUS_CATEGORY_ID=your_category_id
    ```
+
+### 프로젝트 실행
+
+1. pnpm 패키지 매니저 설치
+
+   ```bash
+   npm install -g pnpm
+   ```
+
+2. 의존성 설치
+
+   ```bash
+   pnpm install
+   ```
+
+3. 개발 서버 실행
+   ```bash
+   pnpm dev
+   ```

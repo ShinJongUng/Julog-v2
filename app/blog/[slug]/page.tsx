@@ -6,7 +6,6 @@ import { getMDXComponents } from "@/mdx-components";
 import type { Metadata } from "next";
 import TableOfContents from "@/components/TableOfContents";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import Giscus from "@/components/Giscus";
 import FloatingButtons from "@/components/FloatingButtons";
 
@@ -37,6 +36,7 @@ export async function generateMetadata({
 
   const { meta } = postData;
 
+  const ogImage = meta.image || "";
   return {
     title: meta.title,
     description: meta.description,
@@ -45,7 +45,8 @@ export async function generateMetadata({
       description: meta.description,
       type: "article",
       publishedTime: new Date(meta.date).toISOString(),
-      url: `https://your-blog-url.com/blog/${meta.slug}`,
+      url: `https://blog.jongung.com.com/blog/${meta.slug}`,
+      images: [ogImage],
     },
   };
 }
