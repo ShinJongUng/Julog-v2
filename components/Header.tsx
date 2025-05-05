@@ -7,18 +7,7 @@ import { cn } from "@/lib/utils";
 import { NavigationMenuLink } from "@/components/ui/navigation-menu";
 import { ThemeToggle } from "./ui/theme-toggle";
 
-const components: { title: string; href: string; description: string }[] = [
-  {
-    title: "Sub Item 1",
-    href: "/docs/primitives/alert-dialog",
-    description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
-  },
-];
-
 export default function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center justify-between">

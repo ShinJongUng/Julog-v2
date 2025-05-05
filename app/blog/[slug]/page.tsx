@@ -4,14 +4,13 @@ import { getAllPostsMeta, getPostBySlug } from "@/lib/posts";
 import { formatDate } from "@/lib/utils";
 import { getMDXComponents } from "@/mdx-components";
 import type { Metadata } from "next";
-import Image from "next/image";
 import TableOfContents from "@/components/TableOfContents";
 import Link from "next/link";
 
 interface PostPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateStaticParams() {

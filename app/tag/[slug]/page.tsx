@@ -4,9 +4,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 interface TagPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateStaticParams() {
@@ -19,7 +19,6 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: TagPageProps): Promise<Metadata> {
-  // params 객체를 비동기적으로 처리
   const resolvedParams = await params;
   const decodedTag = decodeURIComponent(resolvedParams.slug);
 
@@ -35,7 +34,6 @@ export async function generateMetadata({
 }
 
 export default async function TagPage({ params }: TagPageProps) {
-  // params 객체를 비동기적으로 처리
   const resolvedParams = await params;
   const decodedTag = decodeURIComponent(resolvedParams.slug);
 
