@@ -1,6 +1,7 @@
 import PostListItem from "@/components/PostListItem";
 import { getAllPostsMeta, getAllUniqueTags } from "@/lib/posts"; // getAllUniqueTags 추가
 import Link from "next/link";
+import SimpleRecentCommentsContainer from "@/components/SimpleRecentCommentsContainer";
 
 export default async function HomePage() {
   const posts = getAllPostsMeta();
@@ -22,49 +23,18 @@ export default async function HomePage() {
         </div>
 
         {/* 오른쪽 컬럼 (사이드바) */}
-        <aside className="lg:col-span-1 space-y-6 md:space-y-8 mt-8 lg:mt-0">
+        <aside className="lg:col-span-1 space-y-6 md:space-y-8 mt-8 lg:mt-0 lg:border-l lg:pl-6">
           <section>
-            <h3 className="text-lg font-semibold mb-3 border-b pb-2">
-              인기있는 글
-            </h3>
-            <ul className="space-y-3">
-              {/* 실제 데이터 기반으로 인기 글 표시 (예시: 첫 3개 글) */}
-              {posts.slice(0, 3).map((post) => (
-                <li key={post.slug} className="text-sm">
-                  <a href={`/blog/${post.slug}`} className="hover:text-primary">
-                    {post.title}
-                  </a>
-                  {post.author && (
-                    <p className="text-xs text-muted-foreground">
-                      {post.author}
-                    </p>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          <section>
-            <h3 className="text-lg font-semibold mb-3 border-b pb-2">
+            <h3 className="text-lg font-semibold mb-3 border-b pb-2 flex items-center">
               최근 댓글
             </h3>
-            <div className="space-y-3">
-              <div className="bg-muted/50 p-3 rounded-md text-sm">
-                <p className="font-medium">qwerty2944</p>
-                <p className="text-muted-foreground mt-1">
-                  efs에 비해서 어떤 장점이 있는걸까요? 잘보고갑니다!
-                </p>
-              </div>
-              <div className="bg-muted/50 p-3 rounded-md text-sm">
-                <p className="font-medium">dev_lover</p>
-                <p className="text-muted-foreground mt-1">
-                  좋은 글 감사합니다!
-                </p>
-              </div>
+            <div className="border rounded-lg p-2 shadow-sm">
+              <SimpleRecentCommentsContainer count={3} />
             </div>
           </section>
 
-          {/* 태그 모음 영역 - 사이드바로 이동 */}
+          <div className="h-px bg-gradient-to-r from-transparent via-green-100 dark:via-green-900 to-transparent my-8"></div>
+
           <section>
             <h3 className="text-lg font-semibold mb-3 border-b pb-2">
               모든 태그

@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const hakgyoansim_allimjang = localFont({
   src: [

@@ -16,7 +16,6 @@ export default function Header() {
         </Link>
 
         <div className="flex items-center gap-2">
-          {/* 테마 토글 버튼 */}
           <ThemeToggle />
         </div>
       </div>

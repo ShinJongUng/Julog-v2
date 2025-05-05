@@ -49,21 +49,11 @@ export default async function TagPage({ params }: TagPageProps) {
   return (
     <div className="py-6 md:py-8">
       <div className="mb-6 md:mb-8">
-        <div className="flex items-center gap-2 mb-4 md:mb-6 text-sm">
-          <Link href="/" className="hover:text-primary">
-            홈
-          </Link>
-          <span className="text-muted-foreground">/</span>
-          <span>태그</span>
-          <span className="text-muted-foreground">/</span>
-          <span className="font-medium">{decodedTag}</span>
-        </div>
-
         <h1 className="text-2xl md:text-3xl font-bold mb-2">
           <span className="text-green-600 dark:text-green-400">
             #{decodedTag}
           </span>{" "}
-          관련 글
+          태그 글
         </h1>
         <p className="text-muted-foreground">
           총 {posts.length}개의 글이 있습니다.
