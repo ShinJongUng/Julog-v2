@@ -21,10 +21,22 @@ export default function Giscus() {
     scriptElem.crossOrigin = "anonymous";
 
     // GitHub 저장소 정보 설정
-    scriptElem.setAttribute("data-repo", "ShinJongUng/Julog-v2");
-    scriptElem.setAttribute("data-repo-id", "R_kgDOOkm8bg");
-    scriptElem.setAttribute("data-category", "General"); // GitHub 카테고리 설정
-    scriptElem.setAttribute("data-category-id", "DIC_kwDOOkm8bs4CcoQd"); // GitHub에서 설정한 카테고리 ID
+    scriptElem.setAttribute(
+      "data-repo",
+      process.env.NEXT_PUBLIC_GISCUS_REPO || ""
+    );
+    scriptElem.setAttribute(
+      "data-repo-id",
+      process.env.NEXT_PUBLIC_GISCUS_REPO_ID || ""
+    );
+    scriptElem.setAttribute(
+      "data-category",
+      process.env.NEXT_PUBLIC_GISCUS_CATEGORY || ""
+    );
+    scriptElem.setAttribute(
+      "data-category-id",
+      process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID || ""
+    );
     scriptElem.setAttribute("data-mapping", "pathname");
     scriptElem.setAttribute("data-strict", "0");
     scriptElem.setAttribute("data-reactions-enabled", "1");

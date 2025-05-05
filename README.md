@@ -11,14 +11,12 @@
 
 ### Github Token 설정
 
-1. Github 계정 설정에서 Developer Settings > Personal access tokens > Tokens (classic)으로 이동
+1. Github 계정 설정에서 Developer Settings > Personal access tokens > Tokens으로 이동
 2. 새로운 토큰 생성 시 아래 권한 필요:
-   - repo (전체)
-   - read:user
-   - user:email
+   - repo:discussion
 3. 생성된 토큰을 `.env.local` 파일에 아래와 같이 설정:
    ```
-   GITHUB_ACCESS_TOKEN=your_token_here
+   GITHUB_TOKEN=your_token_here
    ```
 
 ### Giscus 설정
@@ -29,6 +27,6 @@
    ```
    NEXT_PUBLIC_GISCUS_REPO=username/repo
    NEXT_PUBLIC_GISCUS_REPO_ID=your_repo_id
-   NEXT_PUBLIC_GISCUS_CATEGORY=Announcements
+   NEXT_PUBLIC_GISCUS_CATEGORY=General
    NEXT_PUBLIC_GISCUS_CATEGORY_ID=your_category_id
    ```
