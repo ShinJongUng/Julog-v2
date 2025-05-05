@@ -4,6 +4,8 @@ import "./globals.css";
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 const hakgyoansim_allimjang = localFont({
   src: [
@@ -106,6 +108,8 @@ export default function RootLayout({
           hakgyoansim_allimjang.variable
         )}
       >
+        <Analytics />
+        <SpeedInsights />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
