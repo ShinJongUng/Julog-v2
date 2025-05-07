@@ -2,19 +2,20 @@ import { GiscusComment } from "@/lib/github";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
-import { getAllPostsMeta } from "@/lib/posts";
+import { PostMeta } from "@/lib/posts";
 import Image from "next/image";
 
 interface SimpleRecentCommentsProps {
   comments: GiscusComment[];
   isLoading?: boolean;
+  allPosts: PostMeta[];
 }
 
 export default function SimpleRecentComments({
   comments,
   isLoading = false,
+  allPosts,
 }: SimpleRecentCommentsProps) {
-  const allPosts = getAllPostsMeta();
   const slugToTitleMap = new Map(
     allPosts.map((post) => [post.slug, post.title])
   );

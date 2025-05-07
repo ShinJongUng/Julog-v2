@@ -29,7 +29,7 @@ export default async function HomePage() {
               최근 댓글
             </h3>
             <div className="border rounded-lg p-2 shadow-sm">
-              <SimpleRecentCommentsContainer count={3} />
+              <SimpleRecentCommentsContainer count={3} allPosts={posts} />
             </div>
           </section>
 
