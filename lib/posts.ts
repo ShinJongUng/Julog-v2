@@ -12,6 +12,7 @@ export interface PostMeta {
   author: string; // 작성자 필드 추가
   image?: string; // image 필드는 선택적으로 설정
   tags?: string[]; // 태그 배열 추가
+  isPublished?: boolean; // 게시 여부 필드 추가
   // 다른 필요한 메타데이터 추가 가능 (e.g., tags: string[])
 }
 
@@ -59,7 +60,8 @@ export function getAllPostsMeta(): PostMeta[] {
 
   // null 값 제거 및 유효한 데이터만 필터링
   const validPosts = allPostsData.filter(
-    (post): post is PostMeta => post !== null
+    (post): post is PostMeta =>
+      post !== null && post.isPublished !== undefined && post.isPublished
   );
 
   // Sort posts by date (newest first)

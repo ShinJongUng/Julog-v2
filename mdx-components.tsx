@@ -3,6 +3,7 @@ import Image from "next/image"; // Next.js Image 컴포넌트 사용
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import CodeCopyButton from "./components/CodeCopyButton";
+import React from "react";
 
 export function getMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -150,6 +151,29 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
         </span>
       );
     },
+    table: ({ children }) => {
+      // 모든 마크다운 테이블은 자동으로 tbody로 감싸고
+      // 필요한 경우에만 thead를 추가합니다
+      return (
+        <div className="overflow-x-auto my-6">
+          <table className="w-full border-collapse border border-gray-300 dark:border-gray-600">
+            {children}
+          </table>
+        </div>
+      );
+    },
+
+    tr: ({ children }) => <tr>{children}</tr>,
+    th: ({ children }) => (
+      <th className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-left font-semibold">
+        {children}
+      </th>
+    ),
+    td: ({ children }) => (
+      <td className="px-4 py-2 border border-gray-300 dark:border-gray-600">
+        {children}
+      </td>
+    ),
     ...components,
   };
 }

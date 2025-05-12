@@ -8,6 +8,8 @@ import TableOfContents from "@/components/TableOfContents";
 import Link from "next/link";
 import Giscus from "@/components/Giscus";
 import FloatingButtons from "@/components/FloatingButtons";
+import remarkGfm from "remark-gfm";
+import rehypeSlug from "rehype-slug";
 
 interface PostPageProps {
   params: Promise<{
@@ -94,7 +96,10 @@ export default async function PostPage({ params }: PostPageProps) {
             source={content}
             components={components}
             options={{
-              mdxOptions: {},
+              mdxOptions: {
+                remarkPlugins: [remarkGfm],
+                rehypePlugins: [rehypeSlug],
+              },
             }}
           />
 

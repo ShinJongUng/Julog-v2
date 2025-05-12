@@ -13,12 +13,6 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    mdxRs: {
-      remarkPlugins: [remarkGfm],
-      rehypePlugins: [rehypeSlug],
-    },
-  },
 };
 
 export default nextConfig;
