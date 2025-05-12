@@ -6,10 +6,9 @@ import CodeCopyButton from "./components/CodeCopyButton";
 
 export function getMDXComponents(components: MDXComponents): MDXComponents {
   return {
-    // 기본 HTML 태그에 스타일링이나 커스텀 로직 추가 가능
-    h1: ({ children }) => (
+    h1: ({ children, id }) => (
       <h1
-        id={children.toString().toLowerCase().replace(/ /g, "-")}
+        id={`${children.toString().toLowerCase().replace(/ /g, "-")}-${id}`}
         style={{
           fontSize: "2rem",
           fontWeight: "bold",
@@ -20,9 +19,9 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
         {children}
       </h1>
     ),
-    h2: ({ children }) => (
+    h2: ({ children, id }) => (
       <h2
-        id={children.toString().toLowerCase().replace(/ /g, "-")}
+        id={`${children.toString().toLowerCase().replace(/ /g, "-")}-${id}`}
         style={{
           fontSize: "1.5rem",
           fontWeight: "bold",
@@ -33,9 +32,9 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
         {children}
       </h2>
     ),
-    h3: ({ children }) => (
+    h3: ({ children, id }) => (
       <h3
-        id={children.toString().toLowerCase().replace(/ /g, "-")}
+        id={`${children.toString().toLowerCase().replace(/ /g, "-")}-${id}`}
         style={{
           fontSize: "1.3rem",
           fontWeight: "bold",
