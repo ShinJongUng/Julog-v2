@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface TOCHeading {
@@ -15,19 +15,60 @@ export default function TableOfContents() {
   const navRef = useRef<HTMLElement>(null);
   const [activeStyles, setActiveStyles] = useState({ top: 0, height: 0 });
 
-  useEffect(() => {
-    const headingElements = Array.from(document.querySelectorAll("h1, h2, h3"));
+  const handleScroll = useCallback(() => {
+    const headingElements = Array.from(
+      document.querySelectorAll("h1[id], h2[id], h3[id]")
+    );
 
-    const contentHeadings = headingElements.filter((heading) => {
+    if (headingElements.length === 0) return;
+
+    const scrollThreshold = window.scrollY + 100;
+    const scrollHeight = document.documentElement.scrollHeight;
+    const clientHeight = document.documentElement.clientHeight;
+    const lastElement = headingElements[headingElements.length - 1] as HTMLElement;
+
+    const isNearBottom =
+      window.scrollY + clientHeight >= scrollHeight - 10 || 
+      lastElement.offsetTop <= scrollThreshold; 
+
+    let newActiveId = "";
+
+    if (isNearBottom) {
+      newActiveId = lastElement.id;
+    } else {
+      for (let i = headingElements.length - 1; i >= 0; i--) {
+        const element = headingElements[i] as HTMLElement;
+        if (element.offsetTop <= scrollThreshold) {
+          newActiveId = element.id;
+          break;
+        }
+      }
+      if (!newActiveId && headingElements.length > 0) {
+        newActiveId = headingElements[0].id;
+      }
+    }
+
+    setActiveId((currentActiveId) => {
+      if (newActiveId && newActiveId !== currentActiveId) {
+        return newActiveId;
+      }
+      return currentActiveId;
+    });
+  }, []);
+
+  useEffect(() => {
+    const headingElementsRaw = Array.from(
+      document.querySelectorAll("h1, h2, h3")
+    );
+
+    const contentHeadings = headingElementsRaw.filter((heading) => {
       if (heading.tagName === "H1" && heading.closest("header")) {
         return false;
       }
       return true;
     });
 
-    // 제목 요소들을 TOCHeading 배열로 변환
     const tocHeadings = contentHeadings.map((heading) => {
-      // 각 제목 요소에 id가 없으면 텍스트 기반으로 id 생성
       if (!heading.id) {
         heading.id =
           heading.textContent
@@ -46,61 +87,35 @@ export default function TableOfContents() {
 
     setHeadings(tocHeadings);
 
-    // 스크롤 이벤트에 따라 현재 활성화된 제목을 업데이트하는 함수
-    const handleScroll = () => {
-      const headingElements = Array.from(
-        document.querySelectorAll("h1[id], h2[id], h3[id]")
-      );
-
-      // 화면 상단에서부터 1/3 지점을 기준으로 계산
-      const scrollPosition = window.scrollY + window.innerHeight / 3;
-
-      // 현재 스크롤 위치보다 위에 있는 마지막 제목 찾기
-      for (let i = headingElements.length - 1; i >= 0; i--) {
-        const element = headingElements[i];
-        if ((element as HTMLElement).offsetTop <= scrollPosition) {
-          setActiveId(element.id);
-          return;
-        }
-      }
-
-      // 모든 제목이 스크롤 위치보다 아래에 있으면 첫 번째 제목 활성화
-      if (headingElements.length > 0) {
-        setActiveId(headingElements[0].id);
-      }
-    };
-
-    // 초기 실행 및 스크롤 이벤트 리스너 등록
-    handleScroll();
+    // 스크롤 이벤트 리스너 등록 및 초기 실행
     window.addEventListener("scroll", handleScroll);
+    handleScroll(); // 초기 활성 ID 설정
 
-    // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [handleScroll]);
 
-  // 활성 항목이 변경되면 스크롤하여 항목을 표시하는 함수
   useEffect(() => {
     if (activeId && navRef.current) {
-      const activeElement = navRef.current.querySelector(
+      const activeElement = navRef.current.querySelector<HTMLAnchorElement>(
         `a[href="#${activeId}"]`
       );
       if (activeElement) {
-        const navRect = navRef.current.getBoundingClientRect();
-        const activeRect = activeElement.getBoundingClientRect();
+        const navElement = navRef.current;
 
-        // 배경 애니메이션을 위한 위치와 높이 설정
         setActiveStyles({
-          top: activeRect.top - navRect.top,
-          height: activeRect.height,
+          top: activeElement.offsetTop,
+          height: activeElement.offsetHeight,
         });
 
-        // 활성 항목이 네비게이션 영역을 벗어났는지 확인
-        if (
-          activeRect.top < navRect.top ||
-          activeRect.bottom > navRect.bottom
-        ) {
+        const isTopVisible = activeElement.offsetTop >= navElement.scrollTop;
+        const isBottomVisible =
+          activeElement.offsetTop + activeElement.offsetHeight <=
+          navElement.scrollTop + navElement.clientHeight;
+
+        if (!isTopVisible || !isBottomVisible) {
           activeElement.scrollIntoView({
             behavior: "smooth",
             block: "nearest",
@@ -108,7 +123,7 @@ export default function TableOfContents() {
         }
       }
     }
-  }, [activeId]);
+  }, [activeId, headings]);
 
   if (headings.length === 0) {
     return null;
@@ -116,7 +131,6 @@ export default function TableOfContents() {
 
   return (
     <nav className="text-sm relative" ref={navRef}>
-      {/* 선택 표시자 - 활성 항목 뒤에 표시되는 배경 */}
       <AnimatePresence>
         {activeId && (
           <motion.div

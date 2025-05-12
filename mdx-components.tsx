@@ -9,6 +9,7 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
     // 기본 HTML 태그에 스타일링이나 커스텀 로직 추가 가능
     h1: ({ children }) => (
       <h1
+        id={children.toString().toLowerCase().replace(/ /g, "-")}
         style={{
           fontSize: "2rem",
           fontWeight: "bold",
@@ -21,6 +22,7 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
     ),
     h2: ({ children }) => (
       <h2
+        id={children.toString().toLowerCase().replace(/ /g, "-")}
         style={{
           fontSize: "1.5rem",
           fontWeight: "bold",
@@ -33,6 +35,7 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
     ),
     h3: ({ children }) => (
       <h3
+        id={children.toString().toLowerCase().replace(/ /g, "-")}
         style={{
           fontSize: "1.3rem",
           fontWeight: "bold",
