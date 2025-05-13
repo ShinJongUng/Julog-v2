@@ -8,7 +8,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className="flex flex-col min-h-screen container mx-auto px-4">
+    <div className="flex flex-col min-h-screen max-w-5xl mx-auto px-4">
       <Header />
       <main className="flex-grow">{children}</main>
       {/* 필요하다면 Footer 추가 */}

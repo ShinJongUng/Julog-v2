@@ -90,7 +90,9 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
       </blockquote>
     ),
     strong: ({ children }) => (
-      <strong className="font-bold px-1 py-0.5 rounded">{children}</strong>
+      <strong className="font-bold px-1 py-0.5 bg-green-50 dark:bg-green-900/40 rounded">
+        {children}
+      </strong>
     ),
     code: ({ className, children, ...props }) => {
       const match = /language-(\w+)/.exec(className || "");
@@ -151,29 +153,18 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
         </span>
       );
     },
-    table: ({ children }) => {
-      // 모든 마크다운 테이블은 자동으로 tbody로 감싸고
-      // 필요한 경우에만 thead를 추가합니다
-      return (
-        <div className="overflow-x-auto my-6">
-          <table className="w-full border-collapse border border-gray-300 dark:border-gray-600">
-            {children}
-          </table>
-        </div>
-      );
-    },
 
-    tr: ({ children }) => <tr>{children}</tr>,
+    tr: ({ children }) => (
+      <tr className="hover:bg-green-50 dark:hover:bg-green-900/20">
+        {children}
+      </tr>
+    ),
     th: ({ children }) => (
-      <th className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-left font-semibold">
+      <th className="px-4 py-2 border text-left font-semibold bg-green-800/80 text-white">
         {children}
       </th>
     ),
-    td: ({ children }) => (
-      <td className="px-4 py-2 border border-gray-300 dark:border-gray-600">
-        {children}
-      </td>
-    ),
+    td: ({ children }) => <td className="px-4 py-2 border">{children}</td>,
     ...components,
   };
 }

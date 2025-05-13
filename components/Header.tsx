@@ -6,12 +6,14 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { NavigationMenuLink } from "@/components/ui/navigation-menu";
 import { ThemeToggle } from "./ui/theme-toggle";
+import Image from "next/image";
 
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
-        <Link href="/" className="flex items-center space-x-2">
+        <Link href="/" className="flex items-center gap-0.5">
+          <Image src="/images/logo.webp" alt="Julog" width={32} height={32} />
           <h1 className="font-bold text-xl font-title">Julog</h1>
         </Link>
 

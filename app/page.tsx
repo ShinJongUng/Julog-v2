@@ -2,6 +2,7 @@ import PostListItem from "@/components/PostListItem";
 import { getAllPostsMeta, getAllUniqueTags } from "@/lib/posts"; // getAllUniqueTags 추가
 import Link from "next/link";
 import SimpleRecentCommentsContainer from "@/components/SimpleRecentCommentsContainer";
+import Image from "next/image";
 
 export default async function HomePage() {
   const posts = getAllPostsMeta();

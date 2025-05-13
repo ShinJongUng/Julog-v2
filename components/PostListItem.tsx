@@ -48,7 +48,7 @@ const PostListItem: React.FC<PostListItemProps> = ({ post }) => {
               {formatDate(post.date)} · {post.author}
             </p>
           </div>
-          <div className="relative aspect-video w-full sm:w-48 overflow-hidden rounded-md flex-shrink-0 bg-muted/50">
+          <div className="relative aspect-[13/9] w-full sm:w-36 overflow-hidden rounded-md flex-shrink-0 bg-muted/50">
             {post.image ? (
               <Image
                 src={post.image}

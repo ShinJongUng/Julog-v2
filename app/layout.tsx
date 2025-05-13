@@ -78,17 +78,17 @@ const pretendard = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: "julog",
-    template: "%s | julog",
+    default: "JULOG",
+    template: "%s | JULOG",
   },
-  description: "미니멀리즘 기술 블로그",
-  keywords: ["기술 블로그", "개발", "프로그래밍", "Next.js", "React"],
-  authors: [{ name: "Your Name" }],
+  description: "개발 발자취 남기기",
+  keywords: ["기술 블로그", "개발", "프로그래밍", "프론트엔드", "프로덕트"],
+  authors: [{ name: "Shin Jongung" }],
   openGraph: {
-    title: "julog",
-    description: "미니멀리즘 기술 블로그",
-    url: "https://your-blog-url.com",
-    siteName: "julog",
+    title: "Julog",
+    description: "개발 발자취 남기기",
+    url: "https://blog.jongung.com",
+    siteName: "Julog",
     locale: "ko_KR",
     type: "website",
   },
