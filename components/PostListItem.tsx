@@ -54,6 +54,9 @@ const PostListItem: React.FC<PostListItemProps> = ({ post }) => {
                 src={post.image}
                 alt={post.title}
                 fill
+                priority
+                placeholder="blur"
+                blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlMmU4ZjAiLz48L3N2Zz4="
                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 48px, (max-width: 1024px) 56px, 64px"
                 className="object-cover transition-transform group-hover:scale-105 duration-300"
                 onError={() => setImageError(true)}
@@ -64,6 +67,8 @@ const PostListItem: React.FC<PostListItemProps> = ({ post }) => {
                   src={imagePath}
                   alt={post.title}
                   fill
+                  placeholder="blur"
+                  blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlMmU4ZjAiLz48L3N2Zz4="
                   sizes="(max-width: 640px) 100vw, (max-width: 768px) 48px, (max-width: 1024px) 56px, 64px"
                   className="object-cover transition-transform group-hover:scale-105 duration-300"
                   onError={() => setImageError(true)}

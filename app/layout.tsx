@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 
 const hakgyoansim_allimjang = localFont({
   src: [
@@ -22,25 +23,11 @@ const hakgyoansim_allimjang = localFont({
   ],
   variable: "--font-title",
   display: "swap",
+  preload: true,
 });
 
 const pretendard = localFont({
   src: [
-    {
-      path: "../public/fonts/Pretendard-Thin.woff2",
-      weight: "100",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/Pretendard-ExtraLight.woff2",
-      weight: "200",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/Pretendard-Light.woff2",
-      weight: "300",
-      style: "normal",
-    },
     {
       path: "../public/fonts/Pretendard-Regular.woff2",
       weight: "400",
@@ -52,31 +39,18 @@ const pretendard = localFont({
       style: "normal",
     },
     {
-      path: "../public/fonts/Pretendard-SemiBold.woff2",
-      weight: "600",
-      style: "normal",
-    },
-    {
       path: "../public/fonts/Pretendard-Bold.woff2",
       weight: "700",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/Pretendard-ExtraBold.woff2",
-      weight: "800",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/Pretendard-Black.woff2",
-      weight: "900",
       style: "normal",
     },
   ],
   variable: "--font-sans",
   display: "swap",
+  preload: true,
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://blog.jongung.com"),
   title: {
     default: "JULOG",
     template: "%s | JULOG",
@@ -101,6 +75,46 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning>
+      <head>
+        <link
+          rel="preload"
+          href="/fonts/Pretendard-Regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
+          href="https://avatars.githubusercontent.com"
+          crossOrigin="anonymous"
+        />
+
+        <Script id="vitals-optimization" strategy="afterInteractive">
+          {`
+            const observer = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  const img = entry.target.querySelector('img');
+                  if (img && img.dataset.src) {
+                    const imageLoader = new Image();
+                    imageLoader.src = img.dataset.src;
+                    imageLoader.onload = () => {
+                      img.src = img.dataset.src;
+                    };
+                  }
+                  observer.unobserve(entry.target);
+                }
+              });
+            }, { rootMargin: '200px' });
+            
+            window.addEventListener('load', () => {
+              document.querySelectorAll('.group').forEach(card => {
+                observer.observe(card);
+              });
+            });
+          `}
+        </Script>
+      </head>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
