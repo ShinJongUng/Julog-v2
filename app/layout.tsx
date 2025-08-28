@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import "./critical-clean.css";
 import "./globals.css";
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
@@ -78,42 +79,6 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
-        {/* Critical CSS 인라인화 - FCP/LCP 개선 */}
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-            body {
-              margin: 0;
-              font-family: ${pretendard.style.fontFamily}, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;
-              line-height: 1.5;
-              -webkit-font-smoothing: antialiased;
-              -moz-osx-font-smoothing: grayscale;
-            }
-            * { box-sizing: border-box; }
-            .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
-            .grid { display: grid; gap: 1.5rem; }
-            .flex { display: flex; }
-            .hidden { display: none; }
-            .space-y-6 > * + * { margin-top: 1.5rem; }
-            .aspect-video { aspect-ratio: 16 / 9; }
-            .rounded-md { border-radius: 0.375rem; }
-            .bg-muted { background-color: rgb(245 245 245); }
-            @media (prefers-color-scheme: dark) { .bg-muted { background-color: rgb(39 39 42); } }
-            .animate-pulse {
-              animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-            }
-            @keyframes pulse {
-              0%, 100% { opacity: 1; }
-              50% { opacity: 0.5; }
-            }
-            @media (min-width: 1024px) {
-              .lg\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-              .lg\\:col-span-2 { grid-column: span 2 / span 2; }
-            }
-          `,
-          }}
-        />
-
         <link
           rel="preconnect"
           href="https://avatars.githubusercontent.com"
