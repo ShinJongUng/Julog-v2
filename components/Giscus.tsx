@@ -2,7 +2,7 @@
 
 import { useTheme } from "next-themes";
 import { useEffect, useRef } from "react";
-import { FaComment } from "react-icons/fa";
+import { MessageCircle } from "lucide-react";
 
 export default function Giscus() {
   const ref = useRef<HTMLDivElement>(null);
@@ -63,7 +63,7 @@ export default function Giscus() {
   return (
     <div className="mt-10">
       <div className="flex items-center gap-2 mb-6">
-        <FaComment className="text-green-600" />
+        <MessageCircle className="text-green-600" />
         <h2 className="text-2xl font-bold">댓글</h2>
       </div>
       <section ref={ref} />

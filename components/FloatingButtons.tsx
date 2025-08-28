@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FaArrowUp, FaArrowDown, FaComment, FaEllipsisV } from "react-icons/fa";
+import {
+  ChevronUp,
+  ChevronDown,
+  MessageCircle,
+  MoreVertical,
+} from "lucide-react";
 
 interface FloatingButtonsProps {
   commentSectionId?: string;
@@ -79,7 +84,7 @@ export default function FloatingButtons({
           aria-label="맨 위로 이동"
           style={{ transitionDelay: isExpanded ? "0.1s" : "0s" }}
         >
-          <FaArrowUp />
+          <ChevronUp />
         </button>
 
         <button
@@ -90,7 +95,7 @@ export default function FloatingButtons({
           aria-label="댓글로 이동"
           style={{ transitionDelay: isExpanded ? "0.2s" : "0s" }}
         >
-          <FaComment />
+          <MessageCircle />
         </button>
 
         <button
@@ -101,7 +106,7 @@ export default function FloatingButtons({
           aria-label="맨 아래로 이동"
           style={{ transitionDelay: isExpanded ? "0.3s" : "0s" }}
         >
-          <FaArrowDown />
+          <ChevronDown />
         </button>
       </div>
 
@@ -113,7 +118,7 @@ export default function FloatingButtons({
         }`}
         aria-label="메뉴 접고 펼치기"
       >
-        <FaEllipsisV />
+        <MoreVertical />
       </button>
     </div>
   );

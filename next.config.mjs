@@ -8,24 +8,93 @@ const nextConfig = {
   // 번들 크기 최적화
   experimental: {
     optimizePackageImports: ["lucide-react"],
-    turbo: {
-      rules: {
-        "*.svg": {
-          loaders: ["@svgr/webpack"],
-          as: "*.js",
-        },
+  },
+  turbopack: {
+    rules: {
+      "*.svg": {
+        loaders: ["@svgr/webpack"],
+        as: "*.js",
       },
     },
   },
+
+  // CSS 최적화 설정
 
   // 웹팩 최적화
   webpack: (config, { isServer }) => {
     // 코드 스플리팅 최적화
     if (!isServer) {
       config.optimization.splitChunks.chunks = "all";
+      // 미사용 코드 제거
+      config.optimization.usedExports = true;
+    }
+
+    // 레거시 JS 방지
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+      };
     }
 
     return config;
+  },
+
+  // 빌드 성능 최적화
+  output: "standalone",
+
+  // 캐시 정책 개선을 위한 헤더 설정
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
+          },
+          {
+            key: "X-XSS-Protection",
+            value: "1; mode=block",
+          },
+        ],
+      },
+      // 폰트 파일 캐시 정책
+      {
+        source: "/fonts/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      // 이미지 파일 캐시 정책
+      {
+        source: "/images/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      // JS/CSS 번들 캐시 정책
+      {
+        source: "/_next/static/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
   },
   images: {
     remotePatterns: [
