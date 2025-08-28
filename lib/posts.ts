@@ -13,6 +13,7 @@ export interface PostMeta {
   description: string;
   author: string; // 작성자 필드 추가
   image?: string; // image 필드는 선택적으로 설정
+  heroImage?: string; // 히어로 이미지 (LCP 최적화를 위해 별도)
   tags?: string[]; // 태그 배열 추가
   isPublished?: boolean; // 게시 여부 필드 추가
   // 다른 필요한 메타데이터 추가 가능 (e.g., tags: string[])

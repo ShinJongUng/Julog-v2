@@ -6,6 +6,14 @@ import CodeCopyButton from "./components/CodeCopyButton";
 import { getOptimizedImageUrl, generateBlurDataURL } from "./lib/image-utils";
 import React from "react";
 
+// 각 페이지별 이미지 순서를 추적하기 위한 변수
+let imageIndex = 0;
+
+// 페이지 변경 시 이미지 인덱스 초기화 함수
+export function resetImageIndex() {
+  imageIndex = 0;
+}
+
 export function getMDXComponents(components: MDXComponents): MDXComponents {
   return {
     h1: ({ children, id }) => (
@@ -131,12 +139,16 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
     img: ({ src, alt, width, height, ...rest }) => {
       if (!src) return null;
 
+      // 이미지 순서 증가 및 LCP 최적화
+      const currentImageIndex = imageIndex++;
+      const isFirstImage = currentImageIndex === 0;
+
       // MDX에서 width/height가 문자열로 전달될 수 있으므로 숫자로 변환
       const numWidth = typeof width === "string" ? parseInt(width, 10) : width;
       const numHeight =
         typeof height === "string" ? parseInt(height, 10) : height;
 
-      // 기본값 설정
+      // 기본값 설정 (LCP를 위해 첫 이미지 크기 최적화)
       const validWidth =
         typeof numWidth === "number" && numWidth > 0 ? numWidth : 800;
       const validHeight =
@@ -144,6 +156,10 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
 
       // Notion 이미지 최적화
       const optimizedSrc = getOptimizedImageUrl(src);
+
+      // LCP 최적화: 첫 번째 이미지만 priority 적용
+      const shouldPrioritize = isFirstImage;
+      const shouldLazyLoad = !isFirstImage;
 
       return (
         <span className="my-6 w-full flex justify-center">
@@ -154,9 +170,11 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
             height={validHeight}
             className="rounded-xl mx-auto max-w-full w-auto h-auto shadow-md"
             placeholder="blur"
-            blurDataURL={generateBlurDataURL(validWidth, validHeight)}
-            priority={false}
-            loading="lazy"
+            blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIyNSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxtc3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjNmNGY2Ii8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9IiNlNWU3ZWIiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmM2Y0ZjYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+"
+            priority={shouldPrioritize}
+            loading={shouldLazyLoad ? "lazy" : "eager"}
+            quality={isFirstImage ? 90 : 75}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
             {...rest}
           />
         </span>

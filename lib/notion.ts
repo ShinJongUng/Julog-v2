@@ -3,7 +3,7 @@ import { NotionToMarkdown } from "notion-to-md";
 import { PostMeta } from "./posts";
 import type { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 import type { NotionPageProperties } from "./notion-types";
-import { unstable_cache } from "next/cache";
+import { cache } from "react";
 
 // Notion 클라이언트 초기화
 const notion = new Client({
@@ -118,14 +118,9 @@ const _getAllPostsMeta = async (): Promise<PostMeta[]> => {
  * Notion 데이터베이스에서 모든 게시된 포스트 메타데이터 가져오기 (캐시 적용)
  * 캐시 만료 시간: 5분
  */
-export const getAllPostsMeta = unstable_cache(
-  _getAllPostsMeta,
-  ["all-posts-meta"],
-  {
-    revalidate: 300, // 5분마다 캐시 재생성
-    tags: ["posts", "notion"],
-  }
-);
+export const getAllPostsMeta = cache(async () => {
+  return await _getAllPostsMeta();
+});
 
 // 캐시된 개별 포스트 조회 함수
 const _getPostBySlug = async (slug: string) => {
@@ -219,14 +214,12 @@ const _getPostBySlug = async (slug: string) => {
 };
 
 /**
- * 특정 슬러그에 해당하는 포스트 가져오기 (메타데이터 + 콘텐츠, 캐시 적용)
- * 캐시 만료 시간: 10분
+ * 특정 슬러그에 해당하는 포스트 가져오기 (메타데이터 + 콘텐츠, React cache 적용)
+ * 요청별 캐싱으로 동일 요청에 대한 중복 API 호출 방지
  */
-export const getPostBySlug = (slug: string) =>
-  unstable_cache(() => _getPostBySlug(slug), [`post-${slug}`], {
-    revalidate: 600, // 10분마다 캐시 재생성
-    tags: ["posts", "notion", `post-${slug}`],
-  })();
+export const getPostBySlug = cache(async (slug: string) => {
+  return await _getPostBySlug(slug);
+});
 
 // 캐시된 태그별 포스트 조회 함수
 const _getPostsByTag = async (tag: string): Promise<PostMeta[]> => {
@@ -243,13 +236,11 @@ const _getPostsByTag = async (tag: string): Promise<PostMeta[]> => {
 };
 
 /**
- * 특정 태그가 포함된 포스트 목록 가져오기 (캐시 적용)
+ * 특정 태그가 포함된 포스트 목록 가져오기 (React cache 적용)
  */
-export const getPostsByTag = (tag: string) =>
-  unstable_cache(() => _getPostsByTag(tag), [`posts-by-tag-${tag}`], {
-    revalidate: 300, // 5분마다 캐시 재생성
-    tags: ["posts", "notion", `tag-${tag}`],
-  })();
+export const getPostsByTag = cache(async (tag: string) => {
+  return await _getPostsByTag(tag);
+});
 
 // 캐시된 모든 태그 조회 함수
 const _getAllUniqueTags = async (): Promise<string[]> => {
@@ -271,13 +262,8 @@ const _getAllUniqueTags = async (): Promise<string[]> => {
 };
 
 /**
- * 모든 고유 태그 목록 가져오기 (캐시 적용)
+ * 모든 고유 태그 목록 가져오기 (React cache 적용)
  */
-export const getAllUniqueTags = unstable_cache(
-  _getAllUniqueTags,
-  ["all-unique-tags"],
-  {
-    revalidate: 300, // 5분마다 캐시 재생성
-    tags: ["posts", "notion", "tags"],
-  }
-);
+export const getAllUniqueTags = cache(async () => {
+  return await _getAllUniqueTags();
+});

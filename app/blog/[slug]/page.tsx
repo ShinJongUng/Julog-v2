@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllPostsMeta, getPostBySlug } from "@/lib/posts";
 import { formatDate } from "@/lib/utils";
-import { getMDXComponents } from "@/mdx-components";
+import { HeroImage } from "@/components/PostListItem";
 import {
   generateCompleteMetadata,
   generateArticleStructuredData,
@@ -12,8 +12,8 @@ import {
 import type { Metadata } from "next";
 import TableOfContents from "@/components/TableOfContents";
 import Link from "next/link";
-import Giscus from "@/components/Giscus";
 import FloatingButtons from "@/components/FloatingButtons";
+import Giscus from "@/components/Giscus";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 
@@ -23,8 +23,8 @@ interface PostPageProps {
   }>;
 }
 
-// ISR 설정 - 10분마다 재생성 (더 빠른 콘텐츠 업데이트)
-export const revalidate = 600;
+// ISR 설정 - 5분마다 재생성 (더 빠른 콘텐츠 업데이트와 LCP 최적화)
+export const revalidate = 300;
 
 export async function generateStaticParams() {
   try {
@@ -80,6 +80,12 @@ export default async function PostPage({ params }: PostPageProps) {
   }
 
   const { meta, content } = postData;
+
+  // 각 포스트 페이지마다 이미지 인덱스 초기화 (LCP 최적화를 위해)
+  const { getMDXComponents, resetImageIndex } = await import(
+    "@/mdx-components"
+  );
+  resetImageIndex();
   const components = getMDXComponents({});
 
   // 구조화된 데이터 생성
@@ -136,6 +142,9 @@ export default async function PostPage({ params }: PostPageProps) {
               {formatDate(meta.date)}
             </p>
           </header>
+
+          {/* 히어로 이미지 (LCP 최적화) */}
+          <HeroImage src={meta.heroImage || meta.image} alt={meta.title} />
 
           <MDXRemote
             source={content}

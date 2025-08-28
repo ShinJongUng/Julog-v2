@@ -6,6 +6,45 @@ import { PostMeta } from "@/lib/posts";
 import { formatDate } from "@/lib/utils";
 import { useState } from "react";
 
+// 히어로 이미지 전용 컴포넌트 (LCP 최적화)
+const HeroImage = ({
+  src,
+  alt,
+  className,
+}: {
+  src?: string;
+  alt: string;
+  className?: string;
+}) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  if (!src) return null;
+
+  return (
+    <div
+      className={`relative aspect-[16/9] w-full overflow-hidden rounded-xl bg-muted/50 mb-8 ${className}`}
+    >
+      {!imageLoaded && (
+        <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 rounded-xl" />
+      )}
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        priority
+        placeholder="blur"
+        blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQ1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxtc3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjNmNGY2Ii8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9IiNlNWU3ZWIiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmM2Y0ZjYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+"
+        sizes="100vw"
+        quality={90}
+        className={`object-cover transition-opacity duration-300 ${
+          imageLoaded ? "opacity-100" : "opacity-0"
+        }`}
+        onLoad={() => setImageLoaded(true)}
+      />
+    </div>
+  );
+};
+
 // 이미지 로딩 중 표시할 Skeleton 컴포넌트
 const ImageSkeleton = ({ className }: { className?: string }) => (
   <div
@@ -66,7 +105,7 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
               {formatDate(post.date)} · {post.author}
             </p>
           </div>
-          <div className="relative aspect-[4/3] w-full sm:w-32 overflow-hidden rounded-md flex-shrink-0 bg-muted/50">
+          <div className="relative aspect-[4/3] max-w-36 w-full overflow-hidden rounded-md bg-muted/50">
             {/* 이미지 로딩 중 Skeleton 표시 */}
             {!imageLoaded && !imageError && (
               <ImageSkeleton className="absolute inset-0 rounded-md" />
@@ -125,4 +164,5 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
   );
 };
 
+export { HeroImage };
 export default PostListItem;
