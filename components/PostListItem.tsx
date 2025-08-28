@@ -19,6 +19,8 @@ interface PostListItemProps {
 }
 
 const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
+  // 첫 번째 포스트는 prefetch 활성화 (빠른 페이지 전환)
+  const shouldPrefetch = index === 0;
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const imagePath = `/${post.slug}/main.png`;
@@ -28,7 +30,11 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
 
   return (
     <div className="block border-b pb-8">
-      <Link href={`/blog/${post.slug}`} className="group">
+      <Link
+        href={`/blog/${post.slug}`}
+        className="group"
+        prefetch={shouldPrefetch}
+      >
         <div className="flex flex-col-reverse sm:flex-row sm:items-start sm:gap-6">
           <div className="flex-1 mt-4 sm:mt-0 sm:mb-0 flex flex-col">
             <h2 className="text-xl font-semibold mb-1 group-hover:text-green-600 dark:group-hover:text-green-500 transition-colors duration-300">

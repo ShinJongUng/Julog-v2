@@ -1,5 +1,6 @@
 import PostListItem from "@/components/PostListItem";
-import { getAllPostsMeta, PostMeta } from "@/lib/posts";
+import { getAllPostsMeta, getAllUniqueTags } from "@/lib/notion";
+import { PostMeta } from "@/lib/posts";
 import Link from "next/link";
 import SimpleRecentCommentsContainer from "@/components/SimpleRecentCommentsContainer";
 import { Suspense } from "react";
@@ -11,8 +12,8 @@ export const metadata = {
   },
 };
 
-// ISR 설정 - 5분마다 재생성 (더 빠른 콘텐츠 업데이트)
-export const revalidate = 300;
+// ISR 설정 - 2분마다 재생성 (더 빠른 콘텐츠 업데이트와 캐시 효율성)
+export const revalidate = 120;
 
 // 포스트 리스트 컴포넌트를 별도로 분리하여 Suspense로 감싸기
 function PostList({ posts }: { posts: PostMeta[] }) {
@@ -46,15 +47,11 @@ function PostListSkeleton() {
 }
 
 export default async function HomePage() {
-  const posts = await getAllPostsMeta();
-  // 태그는 포스트 데이터에서 추출하여 불필요한 API 호출 제거
-  const allTags = posts.reduce<string[]>((tags, post) => {
-    if (post.tags && Array.isArray(post.tags)) {
-      return [...tags, ...post.tags];
-    }
-    return tags;
-  }, []);
-  const uniqueTags = [...new Set(allTags)].sort();
+  // 병렬로 데이터 fetching하여 서버 응답 시간 단축
+  const [posts, uniqueTags] = await Promise.all([
+    getAllPostsMeta(),
+    getAllUniqueTags(),
+  ]);
 
   return (
     <div className="py-6 md:py-8">

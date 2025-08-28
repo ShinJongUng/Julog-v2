@@ -84,9 +84,54 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
+        {/* Critical CSS 인라인화 - FCP/LCP 개선 */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+            body {
+              margin: 0;
+              font-family: ${pretendard.style.fontFamily}, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;
+              line-height: 1.5;
+              -webkit-font-smoothing: antialiased;
+              -moz-osx-font-smoothing: grayscale;
+            }
+            * { box-sizing: border-box; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+            .grid { display: grid; gap: 1.5rem; }
+            .flex { display: flex; }
+            .hidden { display: none; }
+            .space-y-6 > * + * { margin-top: 1.5rem; }
+            .aspect-video { aspect-ratio: 16 / 9; }
+            .rounded-md { border-radius: 0.375rem; }
+            .bg-muted { background-color: rgb(245 245 245); }
+            @media (prefers-color-scheme: dark) { .bg-muted { background-color: rgb(39 39 42); } }
+            .animate-pulse {
+              animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            @keyframes pulse {
+              0%, 100% { opacity: 1; }
+              50% { opacity: 0.5; }
+            }
+            @media (min-width: 1024px) {
+              .lg\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+              .lg\\:col-span-2 { grid-column: span 2 / span 2; }
+            }
+          `,
+          }}
+        />
+
+        {/* 메인 페이지에서 사용되는 폰트만 preload */}
         <link
           rel="preload"
           href="/fonts/Pretendard-Regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        {/* 블로그 포스트에서만 사용되는 제목 폰트는 필요할 때 로드 */}
+        <link
+          rel="prefetch"
+          href="/fonts/Hakgyoansim-Allimjang-R.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"
@@ -97,6 +142,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
 
+        {/* Performance monitoring */}
         <Script id="vitals-optimization" strategy="afterInteractive">
           {`
             const observer = new IntersectionObserver((entries) => {

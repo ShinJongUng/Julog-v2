@@ -9,6 +9,9 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },
+
+  // 서버 패키지 설정
+  serverExternalPackages: [],
   turbopack: {
     rules: {
       "*.svg": {

@@ -46,7 +46,25 @@ export default function Giscus() {
     scriptElem.setAttribute("data-lang", "ko");
     scriptElem.setAttribute("data-loading", "lazy");
 
-    ref.current.appendChild(scriptElem);
+    // Intersection Observer로 뷰포트 진입 시에만 스크립트 로드 (bfcache 문제 해결)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            ref.current?.appendChild(scriptElem);
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "50px" }
+    );
+
+    // 약간의 지연 후 observer 시작 (페이지 로드 성능 개선)
+    setTimeout(() => {
+      if (ref.current) {
+        observer.observe(ref.current);
+      }
+    }, 1000);
   }, [theme]);
 
   // 테마 변경 시 giscus 테마도 업데이트
