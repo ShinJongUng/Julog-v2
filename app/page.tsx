@@ -18,8 +18,8 @@ export const revalidate = 300;
 function PostList({ posts }: { posts: PostMeta[] }) {
   return (
     <div className="flex flex-col space-y-6 md:space-y-8">
-      {posts.map((post: PostMeta) => (
-        <PostListItem key={post.slug} post={post} />
+      {posts.map((post: PostMeta, index: number) => (
+        <PostListItem key={post.slug} post={post} index={index} />
       ))}
     </div>
   );

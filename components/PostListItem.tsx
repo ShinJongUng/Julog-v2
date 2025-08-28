@@ -6,13 +6,29 @@ import { PostMeta } from "@/lib/posts";
 import { formatDate } from "@/lib/utils";
 import { useState } from "react";
 
+// 이미지 로딩 중 표시할 Skeleton 컴포넌트
+const ImageSkeleton = ({ className }: { className?: string }) => (
+  <div
+    className={`animate-pulse bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 ${className}`}
+  />
+);
+
+// LCP 최적화를 위한 이미지 크기 제한
+const MAX_IMAGE_WIDTH = 800;
+const MAX_IMAGE_HEIGHT = 600;
+
 interface PostListItemProps {
   post: PostMeta;
+  index?: number; // 포스트 순서 (LCP 최적화를 위해 사용)
 }
 
-const PostListItem: React.FC<PostListItemProps> = ({ post }) => {
+const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
   const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const imagePath = `/${post.slug}/main.png`;
+
+  // LCP 최적화: 첫 번째 3개의 포스트만 priority 적용
+  const shouldPrioritize = index < 3;
 
   return (
     <div className="block border-b pb-8">
@@ -49,17 +65,27 @@ const PostListItem: React.FC<PostListItemProps> = ({ post }) => {
             </p>
           </div>
           <div className="relative aspect-[13/9] w-full sm:w-36 overflow-hidden rounded-md flex-shrink-0 bg-muted/50">
+            {/* 이미지 로딩 중 Skeleton 표시 */}
+            {!imageLoaded && !imageError && (
+              <ImageSkeleton className="absolute inset-0 rounded-md" />
+            )}
+
             {post.image ? (
               <Image
                 src={post.image}
                 alt={post.title}
                 fill
-                priority
+                priority={shouldPrioritize}
                 placeholder="blur"
-                blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlMmU4ZjAiLz48L3N2Zz4="
-                sizes="(max-width: 640px) 100vw, (max-width: 768px) 48px, (max-width: 1024px) 56px, 64px"
-                className="object-cover transition-transform group-hover:scale-105 duration-300"
+                blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIyNSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxtc3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjNmNGY2Ii8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9IiNlNWU3ZWIiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmM2Y0ZjYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+"
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 144px, (max-width: 1024px) 168px, 144px"
+                quality={85}
+                className={`object-cover transition-all duration-300 group-hover:scale-105 ${
+                  imageLoaded ? "opacity-100" : "opacity-0"
+                }`}
+                onLoad={() => setImageLoaded(true)}
                 onError={() => setImageError(true)}
+                loading={shouldPrioritize ? "eager" : "lazy"}
               />
             ) : (
               !imageError && (
@@ -67,13 +93,28 @@ const PostListItem: React.FC<PostListItemProps> = ({ post }) => {
                   src={imagePath}
                   alt={post.title}
                   fill
+                  priority={shouldPrioritize}
                   placeholder="blur"
-                  blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlMmU4ZjAiLz48L3N2Zz4="
-                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 48px, (max-width: 1024px) 56px, 64px"
-                  className="object-cover transition-transform group-hover:scale-105 duration-300"
+                  blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIyNSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxtc3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjNmNGY2Ii8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9IiNlNWU3ZWIiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmM2Y0ZjYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+"
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 144px, (max-width: 1024px) 168px, 144px"
+                  quality={85}
+                  className={`object-cover transition-all duration-300 group-hover:scale-105 ${
+                    imageLoaded ? "opacity-100" : "opacity-0"
+                  }`}
+                  onLoad={() => setImageLoaded(true)}
                   onError={() => setImageError(true)}
+                  loading={shouldPrioritize ? "eager" : "lazy"}
                 />
               )
+            )}
+
+            {/* 에러 상태일 때 기본 이미지 표시 */}
+            {imageError && (
+              <div className="absolute inset-0 flex items-center justify-center bg-muted/50 rounded-md">
+                <div className="text-xs text-muted-foreground">
+                  이미지를 불러올 수 없습니다
+                </div>
+              </div>
             )}
           </div>
         </div>
