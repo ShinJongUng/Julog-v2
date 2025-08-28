@@ -1,5 +1,5 @@
 import PostListItem from "@/components/PostListItem";
-import { getAllPostsMeta, getAllUniqueTags, PostMeta } from "@/lib/posts";
+import { getAllPostsMeta, PostMeta } from "@/lib/posts";
 import Link from "next/link";
 import SimpleRecentCommentsContainer from "@/components/SimpleRecentCommentsContainer";
 import { Suspense } from "react";
@@ -11,8 +11,8 @@ export const metadata = {
   },
 };
 
-// ISR 설정 - 30분마다 재생성
-export const revalidate = 1800;
+// ISR 설정 - 5분마다 재생성 (더 빠른 콘텐츠 업데이트)
+export const revalidate = 300;
 
 // 포스트 리스트 컴포넌트를 별도로 분리하여 Suspense로 감싸기
 function PostList({ posts }: { posts: PostMeta[] }) {
@@ -47,7 +47,14 @@ function PostListSkeleton() {
 
 export default async function HomePage() {
   const posts = await getAllPostsMeta();
-  const allTags = await getAllUniqueTags(); // 모든 태그 가져오기
+  // 태그는 포스트 데이터에서 추출하여 불필요한 API 호출 제거
+  const allTags = posts.reduce<string[]>((tags, post) => {
+    if (post.tags && Array.isArray(post.tags)) {
+      return [...tags, ...post.tags];
+    }
+    return tags;
+  }, []);
+  const uniqueTags = [...new Set(allTags)].sort();
 
   return (
     <div className="py-6 md:py-8">
@@ -88,7 +95,7 @@ export default async function HomePage() {
               모든 태그
             </h3>
             <div className="flex flex-wrap gap-2">
-              {allTags.map((tag) => (
+              {uniqueTags.map((tag) => (
                 <Link
                   key={tag}
                   href={`/tag/${encodeURIComponent(tag.toLowerCase())}`}

@@ -23,14 +23,21 @@ interface PostPageProps {
   }>;
 }
 
-// ISR 설정 - 1시간마다 재생성
-export const revalidate = 3600;
+// ISR 설정 - 10분마다 재생성 (더 빠른 콘텐츠 업데이트)
+export const revalidate = 600;
 
 export async function generateStaticParams() {
-  const posts = await getAllPostsMeta();
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
+  try {
+    const posts = await getAllPostsMeta();
+    // 최대 100개의 최근 포스트만 정적 생성하여 빌드 시간 단축
+    const recentPosts = posts.slice(0, 100);
+    return recentPosts.map((post) => ({
+      slug: post.slug,
+    }));
+  } catch (error) {
+    console.error("Static params generation error:", error);
+    return [];
+  }
 }
 
 export async function generateMetadata({

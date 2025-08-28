@@ -3,6 +3,7 @@ import { NotionToMarkdown } from "notion-to-md";
 import { PostMeta } from "./posts";
 import type { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 import type { NotionPageProperties } from "./notion-types";
+import { unstable_cache } from "next/cache";
 
 // Notion 클라이언트 초기화
 const notion = new Client({
@@ -77,10 +78,8 @@ function notionPageToPostMeta(page: NotionPage): PostMeta | null {
   }
 }
 
-/**
- * Notion 데이터베이스에서 모든 게시된 포스트 메타데이터 가져오기
- */
-export async function getAllPostsMeta(): Promise<PostMeta[]> {
+// 캐시된 Notion 데이터베이스 조회 함수
+const _getAllPostsMeta = async (): Promise<PostMeta[]> => {
   try {
     if (!DATABASE_ID) {
       console.error("NOTION_DATABASE_ID 환경변수가 설정되지 않았습니다.");
@@ -113,12 +112,23 @@ export async function getAllPostsMeta(): Promise<PostMeta[]> {
     console.error("Notion 데이터베이스 조회 오류:", error);
     return [];
   }
-}
+};
 
 /**
- * 특정 슬러그에 해당하는 포스트 가져오기 (메타데이터 + 콘텐츠)
+ * Notion 데이터베이스에서 모든 게시된 포스트 메타데이터 가져오기 (캐시 적용)
+ * 캐시 만료 시간: 5분
  */
-export async function getPostBySlug(slug: string) {
+export const getAllPostsMeta = unstable_cache(
+  _getAllPostsMeta,
+  ["all-posts-meta"],
+  {
+    revalidate: 300, // 5분마다 캐시 재생성
+    tags: ["posts", "notion"],
+  }
+);
+
+// 캐시된 개별 포스트 조회 함수
+const _getPostBySlug = async (slug: string) => {
   try {
     if (!DATABASE_ID) {
       console.error("NOTION_DATABASE_ID 환경변수가 설정되지 않았습니다.");
@@ -206,12 +216,20 @@ export async function getPostBySlug(slug: string) {
     console.error(`포스트 조회 오류 (${slug}):`, error);
     return null;
   }
-}
+};
 
 /**
- * 특정 태그가 포함된 포스트 목록 가져오기
+ * 특정 슬러그에 해당하는 포스트 가져오기 (메타데이터 + 콘텐츠, 캐시 적용)
+ * 캐시 만료 시간: 10분
  */
-export async function getPostsByTag(tag: string): Promise<PostMeta[]> {
+export const getPostBySlug = (slug: string) =>
+  unstable_cache(() => _getPostBySlug(slug), [`post-${slug}`], {
+    revalidate: 600, // 10분마다 캐시 재생성
+    tags: ["posts", "notion", `post-${slug}`],
+  })();
+
+// 캐시된 태그별 포스트 조회 함수
+const _getPostsByTag = async (tag: string): Promise<PostMeta[]> => {
   try {
     const allPosts = await getAllPostsMeta();
 
@@ -222,12 +240,19 @@ export async function getPostsByTag(tag: string): Promise<PostMeta[]> {
     console.error(`태그별 포스트 조회 오류 (${tag}):`, error);
     return [];
   }
-}
+};
 
 /**
- * 모든 고유 태그 목록 가져오기
+ * 특정 태그가 포함된 포스트 목록 가져오기 (캐시 적용)
  */
-export async function getAllUniqueTags(): Promise<string[]> {
+export const getPostsByTag = (tag: string) =>
+  unstable_cache(() => _getPostsByTag(tag), [`posts-by-tag-${tag}`], {
+    revalidate: 300, // 5분마다 캐시 재생성
+    tags: ["posts", "notion", `tag-${tag}`],
+  })();
+
+// 캐시된 모든 태그 조회 함수
+const _getAllUniqueTags = async (): Promise<string[]> => {
   try {
     const allPosts = await getAllPostsMeta();
 
@@ -243,4 +268,16 @@ export async function getAllUniqueTags(): Promise<string[]> {
     console.error("태그 목록 조회 오류:", error);
     return [];
   }
-}
+};
+
+/**
+ * 모든 고유 태그 목록 가져오기 (캐시 적용)
+ */
+export const getAllUniqueTags = unstable_cache(
+  _getAllUniqueTags,
+  ["all-unique-tags"],
+  {
+    revalidate: 300, // 5분마다 캐시 재생성
+    tags: ["posts", "notion", "tags"],
+  }
+);
