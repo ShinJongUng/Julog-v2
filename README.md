@@ -5,9 +5,24 @@
 - 군 생활 중 Cursor와 roo code를 꼭 써보고싶은데 마땅한 side project가 생각이 안난다.
 - 따라서 AI IDE를 활용하여 최고의 블로그를 만든다.
 
+## 주요 특징
+
+- **Notion 기반 콘텐츠 관리**: MDX 파일 대신 Notion 데이터베이스에서 직접 글 작성 및 관리
+- **AI IDE 활용**: Cursor로 개발된 모던 블로그 시스템
+
 ## Project setup
 
-- 댓글 기능을 위해 giscus와 github token이 필요하다
+### Notion API 설정 (필수)
+
+1. [Notion Developers](https://www.notion.so/my-integrations)에서 Integration 생성
+2. 데이터베이스 생성 후 Integration 연결
+3. 환경변수 설정:
+   ```env
+   NOTION_TOKEN=your_notion_integration_token
+   NOTION_DATABASE_ID=your_database_id
+   ```
+
+### 댓글 기능 설정
 
 ### Github Token 설정
 

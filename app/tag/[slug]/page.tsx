@@ -9,8 +9,11 @@ interface TagPageProps {
   }>;
 }
 
+// ISR 설정 - 1시간마다 재생성
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
-  const tags = getAllUniqueTags();
+  const tags = await getAllUniqueTags();
   return tags.map((tag) => ({
     slug: tag.toLowerCase(),
   }));
@@ -38,10 +41,10 @@ export default async function TagPage({ params }: TagPageProps) {
   const decodedTag = decodeURIComponent(resolvedParams.slug);
 
   // 해당 태그를 가진 게시물 가져오기
-  const posts = getPostsByTag(decodedTag);
+  const posts = await getPostsByTag(decodedTag);
 
   // 다른 인기 태그 가져오기 (최대 10개)
-  const allTags = getAllUniqueTags();
+  const allTags = await getAllUniqueTags();
   const otherTags = allTags
     .filter((tag) => tag.toLowerCase() !== decodedTag.toLowerCase())
     .slice(0, 10);

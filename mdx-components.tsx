@@ -3,6 +3,7 @@ import Image from "next/image"; // Next.js Image 컴포넌트 사용
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import CodeCopyButton from "./components/CodeCopyButton";
+import { getOptimizedImageUrl, generateBlurDataURL } from "./lib/image-utils";
 import React from "react";
 
 export function getMDXComponents(components: MDXComponents): MDXComponents {
@@ -128,26 +129,34 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
       );
     },
     img: ({ src, alt, width, height, ...rest }) => {
-      // MDX에서 width/height가 문자열로 전달될 수 있으므로 숫자로 변환합니다.
+      if (!src) return null;
+
+      // MDX에서 width/height가 문자열로 전달될 수 있으므로 숫자로 변환
       const numWidth = typeof width === "string" ? parseInt(width, 10) : width;
       const numHeight =
         typeof height === "string" ? parseInt(height, 10) : height;
 
-      // 유효성 검사 또는 기본값 설정
-      // MDX 파일에 width/height 속성이 없는 경우를 대비한 기본값
+      // 기본값 설정
       const validWidth =
-        typeof numWidth === "number" && numWidth > 0 ? numWidth : 700;
+        typeof numWidth === "number" && numWidth > 0 ? numWidth : 800;
       const validHeight =
         typeof numHeight === "number" && numHeight > 0 ? numHeight : 400;
+
+      // Notion 이미지 최적화
+      const optimizedSrc = getOptimizedImageUrl(src);
 
       return (
         <span className="my-6 w-full flex justify-center">
           <Image
-            src={src || ""}
+            src={optimizedSrc}
             alt={alt || "이미지"}
             width={validWidth}
             height={validHeight}
-            className="rounded-xl mx-auto max-w-full w-auto h-auto shadow-md "
+            className="rounded-xl mx-auto max-w-full w-auto h-auto shadow-md"
+            placeholder="blur"
+            blurDataURL={generateBlurDataURL(validWidth, validHeight)}
+            priority={false}
+            loading="lazy"
             {...rest}
           />
         </span>
@@ -165,6 +174,13 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
       </th>
     ),
     td: ({ children }) => <td className="px-4 py-2 border">{children}</td>,
+    table: ({ children }) => (
+      <div className="overflow-x-auto mb-6">
+        <table className="w-full border-collapse border border-gray-300">
+          {children}
+        </table>
+      </div>
+    ),
     ...components,
   };
 }

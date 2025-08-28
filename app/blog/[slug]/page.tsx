@@ -3,6 +3,12 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllPostsMeta, getPostBySlug } from "@/lib/posts";
 import { formatDate } from "@/lib/utils";
 import { getMDXComponents } from "@/mdx-components";
+import {
+  generateCompleteMetadata,
+  generateArticleStructuredData,
+  generateBreadcrumbStructuredData,
+  generateFAQStructuredData,
+} from "@/lib/seo-utils";
 import type { Metadata } from "next";
 import TableOfContents from "@/components/TableOfContents";
 import Link from "next/link";
@@ -17,8 +23,11 @@ interface PostPageProps {
   }>;
 }
 
+// ISR 설정 - 1시간마다 재생성
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
-  const posts = getAllPostsMeta();
+  const posts = await getAllPostsMeta();
   return posts.map((post) => ({
     slug: post.slug,
   }));
@@ -37,18 +46,20 @@ export async function generateMetadata({
   }
 
   const { meta } = postData;
-
-  const ogImage = meta.image || "";
+  // 고도화된 SEO 메타데이터 생성
+  const metadata = generateCompleteMetadata(meta);
   return {
-    title: meta.title,
-    description: meta.description,
-    openGraph: {
-      title: meta.title,
-      description: meta.description,
-      type: "article",
-      publishedTime: new Date(meta.date).toISOString(),
-      url: `https://blog.jongung.com.com/blog/${meta.slug}`,
-      images: [ogImage],
+    ...metadata,
+    robots: {
+      index: metadata.robots.index,
+      follow: metadata.robots.follow,
+      googleBot: {
+        index: metadata.robots.googleBot.index,
+        follow: metadata.robots.googleBot.follow,
+        "max-video-preview": metadata.robots.googleBot["max-video-preview"],
+        "max-image-preview": "large",
+        "max-snippet": metadata.robots.googleBot["max-snippet"],
+      },
     },
   };
 }
@@ -64,8 +75,35 @@ export default async function PostPage({ params }: PostPageProps) {
   const { meta, content } = postData;
   const components = getMDXComponents({});
 
+  // 구조화된 데이터 생성
+  const articleStructuredData = generateArticleStructuredData(meta, content);
+  const breadcrumbStructuredData = generateBreadcrumbStructuredData(meta);
+  const faqStructuredData = generateFAQStructuredData(content);
+
   return (
     <>
+      {/* 구조화된 데이터 삽입 */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(articleStructuredData),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbStructuredData),
+        }}
+      />
+      {faqStructuredData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(faqStructuredData),
+          }}
+        />
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8 py-6 md:py-8">
         <article className="prose dark:prose-invert lg:col-span-3 max-w-none">
           <header className="mb-6 md:mb-8 border-b pb-4">

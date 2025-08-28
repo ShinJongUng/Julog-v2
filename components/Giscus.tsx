@@ -47,7 +47,7 @@ export default function Giscus() {
     scriptElem.setAttribute("data-loading", "lazy");
 
     ref.current.appendChild(scriptElem);
-  }, []);
+  }, [theme]);
 
   // 테마 변경 시 giscus 테마도 업데이트
   useEffect(() => {

@@ -11,6 +11,9 @@ export const metadata = {
   },
 };
 
+// ISR 설정 - 30분마다 재생성
+export const revalidate = 1800;
+
 // 포스트 리스트 컴포넌트를 별도로 분리하여 Suspense로 감싸기
 function PostList({ posts }: { posts: PostMeta[] }) {
   return (
@@ -43,8 +46,8 @@ function PostListSkeleton() {
 }
 
 export default async function HomePage() {
-  const posts = getAllPostsMeta();
-  const allTags = getAllUniqueTags(); // 모든 태그 가져오기
+  const posts = await getAllPostsMeta();
+  const allTags = await getAllUniqueTags(); // 모든 태그 가져오기
 
   return (
     <div className="py-6 md:py-8">
