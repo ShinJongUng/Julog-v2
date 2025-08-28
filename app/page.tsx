@@ -1,5 +1,5 @@
 import PostListItem from "@/components/PostListItem";
-import { getAllPostsMeta, getAllUniqueTags } from "@/lib/notion";
+import { getAllPostsMeta } from "@/lib/notion";
 import { PostMeta } from "@/lib/posts";
 import Link from "next/link";
 import SimpleRecentCommentsContainer from "@/components/SimpleRecentCommentsContainer";
@@ -47,11 +47,16 @@ function PostListSkeleton() {
 }
 
 export default async function HomePage() {
-  // 병렬로 데이터 fetching하여 서버 응답 시간 단축
-  const [posts, uniqueTags] = await Promise.all([
-    getAllPostsMeta(),
-    getAllUniqueTags(),
-  ]);
+  // 단일 API 호출로 중복 제거 (getAllPostsMeta에서 이미 태그 정보 포함)
+  const posts = await getAllPostsMeta();
+  // 포스트 데이터에서 태그 추출하여 불필요한 API 호출 제거
+  const allTags = posts.reduce<string[]>((tags, post) => {
+    if (post.tags && Array.isArray(post.tags)) {
+      return [...tags, ...post.tags];
+    }
+    return tags;
+  }, []);
+  const uniqueTags = [...new Set(allTags)].sort();
 
   return (
     <div className="py-6 md:py-8">

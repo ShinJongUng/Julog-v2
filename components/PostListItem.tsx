@@ -66,7 +66,7 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
               {formatDate(post.date)} · {post.author}
             </p>
           </div>
-          <div className="relative aspect-[13/9] w-full sm:w-36 overflow-hidden rounded-md flex-shrink-0 bg-muted/50">
+          <div className="relative aspect-[4/3] w-full sm:w-32 overflow-hidden rounded-md flex-shrink-0 bg-muted/50">
             {/* 이미지 로딩 중 Skeleton 표시 */}
             {!imageLoaded && !imageError && (
               <ImageSkeleton className="absolute inset-0 rounded-md" />
@@ -80,8 +80,8 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
                 priority={shouldPrioritize}
                 placeholder="blur"
                 blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIyNSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxtc3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjNmNGY2Ii8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9IiNlNWU3ZWIiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmM2Y0ZjYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+"
-                sizes="(max-width: 640px) 100vw, (max-width: 768px) 144px, (max-width: 1024px) 168px, 144px"
-                quality={85}
+                sizes="(max-width: 640px) 100vw, 128px"
+                quality={75}
                 className={`object-cover transition-all duration-300 group-hover:scale-105 ${
                   imageLoaded ? "opacity-100" : "opacity-0"
                 }`}

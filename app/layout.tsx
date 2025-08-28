@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import "./critical.css";
 import "./globals.css";
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
@@ -36,11 +37,6 @@ const pretendard = localFont({
     {
       path: "../public/fonts/Pretendard-Medium.woff2",
       weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/Pretendard-Bold.woff2",
-      weight: "700",
       style: "normal",
     },
   ],
@@ -120,18 +116,10 @@ export default function RootLayout({
           }}
         />
 
-        {/* 메인 페이지에서 사용되는 폰트만 preload */}
+        {/* 핵심 폰트만 preload */}
         <link
           rel="preload"
           href="/fonts/Pretendard-Regular.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        {/* 블로그 포스트에서만 사용되는 제목 폰트는 필요할 때 로드 */}
-        <link
-          rel="prefetch"
-          href="/fonts/Hakgyoansim-Allimjang-R.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"

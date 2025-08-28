@@ -5,6 +5,11 @@ const nextConfig = {
   pageExtensions: ["ts", "tsx", "js", "jsx"], // MDX 확장자 제거
   reactStrictMode: true,
 
+  // 모던 브라우저 타겟팅으로 번들 크기 최적화
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+
   // 번들 크기 최적화
   experimental: {
     optimizePackageImports: ["lucide-react"],
@@ -27,18 +32,41 @@ const nextConfig = {
   webpack: (config, { isServer }) => {
     // 코드 스플리팅 최적화
     if (!isServer) {
-      config.optimization.splitChunks.chunks = "all";
-      // 미사용 코드 제거
+      config.optimization.splitChunks = {
+        chunks: "all",
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: "vendors",
+            chunks: "all",
+            priority: 10,
+          },
+          common: {
+            name: "common",
+            minChunks: 2,
+            chunks: "all",
+            priority: 5,
+            reuseExistingChunk: true,
+          },
+        },
+      };
+
+      // 미사용 코드 제거 강화
       config.optimization.usedExports = true;
+      config.optimization.sideEffects = false;
+
+      // Tree shaking 강화
+      config.optimization.providedExports = true;
     }
 
-    // 레거시 JS 방지
+    // 불필요한 모듈 번들링 방지
+    config.externals = config.externals || [];
     if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        path: false,
-      };
+      config.externals.push({
+        // Analytics 번들 크기 최적화
+        "@vercel/analytics": "@vercel/analytics",
+        "@vercel/speed-insights": "@vercel/speed-insights",
+      });
     }
 
     return config;
