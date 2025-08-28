@@ -13,7 +13,7 @@ const ImageSkeleton = ({ className }: { className?: string }) => (
   />
 );
 
-// LCP 최적화를 위한 이미지 크기 제한
+// LCP 최적화를 위한 이미지 크기 제한 함
 const MAX_IMAGE_WIDTH = 800;
 const MAX_IMAGE_HEIGHT = 600;
 
