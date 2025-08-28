@@ -161,6 +161,9 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
       const shouldPrioritize = isFirstImage;
       const shouldLazyLoad = !isFirstImage;
 
+      // LCP 개선을 위한 추가 로딩 전략
+      const fetchPriority = isFirstImage ? "high" : "auto";
+
       return (
         <span className="my-6 w-full flex justify-center">
           <Image
@@ -170,11 +173,12 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
             height={validHeight}
             className="rounded-xl mx-auto max-w-full w-auto h-auto shadow-md"
             placeholder="blur"
-            blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIyNSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxtc3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjNmNGY2Ii8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9IiNlNWU3ZWIiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmM2Y0ZjYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+"
+            blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIyNSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxtc3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjNmNGY2Ii8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9IiNlNWU3ZWIiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmM2Y0ZjYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2EpIi8+PGNpcmNsZSBjeD0iMjAwIiBjeT0iMTEyIiByPSI2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOWNhM2FmIiBzdHJva2Utd2lkdGg9IjQiIG9wYWNpdHk9IjAuMyIvPjxwYXRoIGQ9Ik0xNjAgMTMwaDYwbTEtNjAtMjBoNjB2NjBoLTYwdi02MHoiIGZpbGw9IiM5Y2EzYWYiIG9wYWNpdHk9IjAuMyIvPjwvc3ZnPg=="
             priority={shouldPrioritize}
             loading={shouldLazyLoad ? "lazy" : "eager"}
             quality={isFirstImage ? 90 : 75}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+            fetchPriority={fetchPriority}
             {...rest}
           />
         </span>
