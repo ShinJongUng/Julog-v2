@@ -132,13 +132,10 @@ export default function TableOfContents() {
               onClick={(e) => {
                 e.preventDefault();
                 const element = document.getElementById(heading.id);
-                if (element) {
-                  window.scrollTo({
-                    top: (element as HTMLElement).offsetTop - 100,
-                    behavior: "smooth",
-                  });
-                  setActiveId(heading.id);
-                }
+                if (!element) return;
+                const y = element.getBoundingClientRect().top + window.scrollY - 100;
+                window.scrollTo({ top: y, behavior: "smooth" });
+                // activeId는 IntersectionObserver가 스크롤 진행 순서대로 업데이트하도록 둡니다.
               }}
             >
               <span>{heading.text}</span>
