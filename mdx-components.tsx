@@ -1,7 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import Image from "next/image"; // Next.js Image 컴포넌트 사용
-import dynamic from "next/dynamic";
-import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
+import CodeBlock from "./components/CodeBlock";
 import CodeCopyButton from "./components/CodeCopyButton";
 import { getOptimizedImageUrl, generateBlurDataURL } from "./lib/image-utils";
 import React from "react";
@@ -15,11 +14,6 @@ export function resetImageIndex() {
 }
 
 export function getMDXComponents(components: MDXComponents): MDXComponents {
-  // 코드 하이라이터는 지연 로딩해 초기 JS를 줄입니다.
-  const SyntaxHighlighter = dynamic(
-    () => import("react-syntax-highlighter").then((m) => m.Prism),
-    { ssr: false, loading: () => <pre style={{ margin: 0 }} /> }
-  );
   return {
     h1: ({ children, id }) => (
       <h1
@@ -116,18 +110,8 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
         const language = match[1];
         return (
           <div className="my-6 rounded-md overflow-hidden relative">
-            {/* 복사 버튼만 클라이언트 컴포넌트로 분리 */}
             <CodeCopyButton code={code} />
-
-            <SyntaxHighlighter
-              language={language}
-              style={tomorrow}
-              customStyle={{ margin: 0, borderRadius: "0.375rem" }}
-              showLineNumbers
-              wrapLongLines
-            >
-              {code}
-            </SyntaxHighlighter>
+            <CodeBlock code={code} language={language} />
           </div>
         );
       }
