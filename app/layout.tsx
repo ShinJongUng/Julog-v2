@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./critical-clean.css";
 import "./globals.css";
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
@@ -79,6 +78,16 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
+        {/* Inline tiny critical CSS to avoid extra blocking request */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `/* Critical CSS - minimal */
+*{box-sizing:border-box}
+html{line-height:1.5;-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--font-sans),system-ui,sans-serif;line-height:inherit;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+`,
+          }}
+        />
         {/* Preconnects for third-party origins used early */}
         <link
           rel="preconnect"
@@ -101,11 +110,12 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link rel="dns-prefetch" href="https://giscus.app" />
-        <link rel="preconnect" href="https://giscus.app" crossOrigin="anonymous" />
         <link
-          rel="dns-prefetch"
-          href="https://vitals.vercel-insights.com"
+          rel="preconnect"
+          href="https://giscus.app"
+          crossOrigin="anonymous"
         />
+        <link rel="dns-prefetch" href="https://vitals.vercel-insights.com" />
         <link
           rel="preconnect"
           href="https://vitals.vercel-insights.com"

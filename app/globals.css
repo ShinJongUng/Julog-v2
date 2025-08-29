@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "tw-animate-css";
+/* Remove heavy animation preset to shrink critical CSS. */
 
 @custom-variant dark (&:is(.dark *));
 

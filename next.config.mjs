@@ -13,6 +13,12 @@ const nextConfig = {
   // 번들 크기 최적화
   experimental: {
     optimizePackageImports: ["lucide-react"],
+    // Inline critical CSS and defer the rest via Critters
+    optimizeCss: true,
+    // Inline CSS where possible to avoid extra roundtrips
+    inlineCss: true,
+    // Create more granular per-route CSS chunks
+    cssChunking: 'strict',
   },
 
   // 서버 패키지 설정
