@@ -86,7 +86,7 @@ export default async function PostPage({ params }: PostPageProps) {
     "@/mdx-components"
   );
   resetImageIndex();
-  const components = getMDXComponents({});
+  const components = getMDXComponents({}, { hasHero: Boolean(meta.heroImage || meta.image) });
 
   // 구조화된 데이터 생성
   const articleStructuredData = generateArticleStructuredData(meta, content);

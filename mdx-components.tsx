@@ -13,7 +13,11 @@ export function resetImageIndex() {
   imageIndex = 0;
 }
 
-export function getMDXComponents(components: MDXComponents): MDXComponents {
+export function getMDXComponents(
+  components: MDXComponents,
+  opts?: { hasHero?: boolean }
+): MDXComponents {
+  const hasHero = Boolean(opts?.hasHero);
   return {
     h1: ({ children, id }) => (
       <h1
@@ -146,10 +150,11 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
       // Notion 이미지 최적화
       const optimizedSrc = getOptimizedImageUrl(src);
 
-      // 본문 이미지는 항상 지연 로딩하여 LCP를 히어로 이미지에 집중
-      const shouldPrioritize = false;
-      const shouldLazyLoad = true;
-      const fetchPriority = "auto";
+      // 히어로 이미지가 없으면 본문 첫 이미지를 LCP 후보로 승격
+      const isFirstContentImage = isFirstImage && !hasHero;
+      const shouldPrioritize = isFirstContentImage;
+      const shouldLazyLoad = !isFirstContentImage;
+      const fetchPriority = isFirstContentImage ? "high" : "auto";
 
       return (
         <span className="my-6 w-full flex justify-center">
@@ -162,8 +167,8 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
             placeholder="empty"
             priority={shouldPrioritize}
             loading={shouldLazyLoad ? "lazy" : "eager"}
-            quality={isFirstImage ? 90 : 75}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+            quality={shouldPrioritize ? 80 : 70}
+            sizes="(max-width: 1024px) 100vw, 720px"
             fetchPriority={fetchPriority}
             {...rest}
           />
