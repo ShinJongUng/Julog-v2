@@ -16,7 +16,7 @@ const HeroImage = ({ src, alt, className }: { src?: string; alt: string; classNa
         placeholder="empty"
         fetchPriority="high"
         sizes="100vw"
-        quality={90}
+        quality={80}
         className="object-cover"
       />
     </div>
@@ -87,7 +87,7 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
                 priority={shouldPrioritize}
                 placeholder="empty"
                 sizes="(max-width: 640px) 100vw, 128px"
-                quality={75}
+                quality={70}
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 loading={shouldPrioritize ? "eager" : "lazy"}
               />
@@ -100,7 +100,7 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
                   priority={shouldPrioritize}
                   placeholder="empty"
                   sizes="(max-width: 640px) 100vw, (max-width: 768px) 144px, (max-width: 1024px) 168px, 144px"
-                  quality={85}
+                  quality={75}
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                   loading={shouldPrioritize ? "eager" : "lazy"}
                 />

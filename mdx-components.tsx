@@ -150,16 +150,16 @@ export function getMDXComponents(
       const numHeight =
         typeof height === "string" ? parseInt(height, 10) : height;
 
-      // 기본값 설정 (LCP를 위해 첫 이미지 크기 최적화)
+      // 기본값: 실제 본문 폭에 맞춰 더 보수적 설정
       const validWidth =
-        typeof numWidth === "number" && numWidth > 0 ? numWidth : 800;
+        typeof numWidth === "number" && numWidth > 0 ? numWidth : 600;
       const validHeight =
-        typeof numHeight === "number" && numHeight > 0 ? numHeight : 400;
+        typeof numHeight === "number" && numHeight > 0 ? numHeight : 338;
 
       // Notion 이미지 최적화
       const optimizedSrc = getOptimizedImageUrl(src);
 
-      // LCP 최적화: 첫 번째 이미지만 priority 적용
+      // LCP 최적화: 본문 첫 이미지는 LCP 후보
       const shouldPrioritize = isFirstImage;
       const shouldLazyLoad = !isFirstImage;
       const fetchPriority = isFirstImage ? "high" : "auto";
@@ -172,12 +172,12 @@ export function getMDXComponents(
             width={validWidth}
             height={validHeight}
             className="rounded-xl mx-auto max-w-full w-auto h-auto shadow-md"
-            placeholder="blur"
-            blurDataURL={generateBlurDataURL(8, 6)}
+            placeholder={isFirstImage ? "empty" : "blur"}
+            {...(!isFirstImage && { blurDataURL: generateBlurDataURL(8, 6) })}
             priority={shouldPrioritize}
             loading={shouldLazyLoad ? "lazy" : "eager"}
-            quality={isFirstImage ? 90 : 75}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+            quality={isFirstImage ? 70 : 65}
+            sizes="(max-width: 420px) 100vw, (max-width: 768px) 95vw, (max-width: 1200px) 85vw, 600px"
             fetchPriority={fetchPriority}
             {...rest}
           />

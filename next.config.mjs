@@ -166,10 +166,11 @@ const nextConfig = {
       },
     ],
     formats: ["image/avif", "image/webp"],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    // 더 작은 후보만 노출해 과도한 해상도 요청 방지
+    deviceSizes: [360, 414, 640, 750, 828, 960],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // 이미지 최적화 성능 향상 (서명 URL 주기 고려)
-    minimumCacheTTL: 300,
+    // 이미지 최적화 캐시 (서명 URL 주기 고려)
+    minimumCacheTTL: 600,
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
