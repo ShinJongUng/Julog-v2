@@ -136,12 +136,12 @@ export function generateCompleteMetadata(post: PostMeta) {
     : `https://blog.jongung.com${generateOGImageUrl(post)}`;
 
   return {
-    title: `${post.title} | Julog`,
+    title: `${post.title}`,
     description: post.description,
     keywords: post.tags?.join(", ") || "",
     authors: [{ name: post.author, url: "https://blog.jongung.com" }],
     creator: post.author,
-    publisher: "Julog",
+    publisher: "신종웅",
     robots: {
       index: true,
       follow: true,

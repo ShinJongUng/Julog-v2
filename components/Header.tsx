@@ -14,7 +14,7 @@ export default function Header() {
       <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
         <Link href="/" className="flex items-center gap-0.5">
           <Image src="/images/logo.webp" alt="Julog" width={32} height={32} />
-          <h1 className="font-bold text-xl font-title">Julog</h1>
+          <h3 className="font-bold text-xl font-title">Julog</h3>
         </Link>
 
         <div className="flex items-center gap-2">
