@@ -15,87 +15,104 @@ export default function TableOfContents() {
   const [activeStyles, setActiveStyles] = useState({ top: 0, height: 0 });
 
   useEffect(() => {
-    const headingElementsRaw = Array.from(document.querySelectorAll("h1, h2, h3"));
+    // 작은 화면에서는 TOC를 렌더하지 않으므로 초기 작업 스킵
+    if (typeof window !== "undefined") {
+      const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+      if (!isDesktop) return;
+    }
 
-    const contentHeadings = headingElementsRaw.filter((heading) => {
-      if (heading.tagName === "H1" && heading.closest("header")) return false;
-      return true;
-    });
+    const init = () => {
+      const headingElementsRaw = Array.from(
+        document.querySelectorAll("h1, h2, h3")
+      );
 
-    const tocHeadings = contentHeadings.map((heading) => {
-      if (!heading.id) {
-        heading.id =
-          heading.textContent
-            ?.toLowerCase()
-            .replace(/\s+/g, "-")
-            .replace(/[^\w-]/g, "") ||
-          `heading-${Math.random().toString(36).slice(2, 11)}`;
-      }
-      return {
-        id: heading.id,
-        text: heading.textContent || "",
-        level: parseInt(heading.tagName.charAt(1)),
+      const contentHeadings = headingElementsRaw.filter((heading) => {
+        if (heading.tagName === "H1" && heading.closest("header")) return false;
+        return true;
+      });
+
+      const tocHeadings = contentHeadings.map((heading) => {
+        if (!heading.id) {
+          heading.id =
+            heading.textContent
+              ?.toLowerCase()
+              .replace(/\s+/g, "-")
+              .replace(/[^\w-]/g, "") ||
+            `heading-${Math.random().toString(36).slice(2, 11)}`;
+        }
+        return {
+          id: heading.id,
+          text: heading.textContent || "",
+          level: parseInt(heading.tagName.charAt(1)),
+        };
+      });
+      setHeadings(tocHeadings);
+
+      // IntersectionObserver로 활성 헤딩 추적 (가벼운 기준)
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.getAttribute("id") || "";
+              if (id) setActiveId(id);
+            }
+          });
+        },
+        { rootMargin: "0px 0px -60% 0px", threshold: 0 }
+      );
+
+      contentHeadings.forEach((el) => observer.observe(el));
+
+      // 초기 활성 ID 설정 (첫 번째 헤딩)
+      if (contentHeadings[0]?.id) setActiveId(contentHeadings[0].id);
+
+      return () => {
+        observer.disconnect();
       };
-    });
-    setHeadings(tocHeadings);
-
-    // IntersectionObserver로 활성 헤딩 추적 (가벼운 기준)
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const id = entry.target.getAttribute("id") || "";
-            if (id) setActiveId(id);
-          }
-        });
-      },
-      { rootMargin: "0px 0px -60% 0px", threshold: 0 }
-    );
-
-    contentHeadings.forEach((el) => observer.observe(el));
-
-    // 바닥 부근에서 마지막 헤딩 활성화
-    const onScrollBottom = () => {
-      if (
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 2
-      ) {
-        const last = tocHeadings[tocHeadings.length - 1];
-        if (last) setActiveId(last.id);
-      }
     };
-    window.addEventListener("scroll", onScrollBottom, { passive: true });
 
-    // 초기 활성 ID 설정
-    if (contentHeadings[0]?.id) setActiveId(contentHeadings[0].id);
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("scroll", onScrollBottom);
-    };
+    // 초기 콘텐츠 페인트 이후로 지연해 메인 경로에서 제거
+    let cleanup: (() => void) | undefined;
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      const id = window.requestIdleCallback(
+        () => {
+          cleanup = init() as unknown as (() => void) | undefined;
+        },
+        { timeout: 1500 }
+      );
+      return () => {
+        window.cancelIdleCallback?.(id);
+        cleanup?.();
+      };
+    } else {
+      const t = setTimeout(() => {
+        cleanup = init() as unknown as (() => void) | undefined;
+      }, 600);
+      return () => {
+        clearTimeout(t);
+        cleanup?.();
+      };
+    }
   }, []);
 
   useEffect(() => {
+    // 작은 화면에서는 동작하지 않음
+    if (typeof window !== "undefined") {
+      const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+      if (!isDesktop) return;
+    }
+
     if (!activeId || !navRef.current) return;
     const activeElement = navRef.current.querySelector<HTMLAnchorElement>(
       `a[href="#${activeId}"]`
     );
     if (!activeElement) return;
 
-    // 읽기 작업을 rAF로 모아서 리플로우 최소화
+    // 읽기 작업을 rAF로 묶고, 최소한의 DOM 읽기만 수행
     requestAnimationFrame(() => {
-      setActiveStyles({
-        top: activeElement.offsetTop,
-        height: activeElement.offsetHeight,
-      });
-      const navElement = navRef.current!;
-      const isTopVisible = activeElement.offsetTop >= navElement.scrollTop;
-      const isBottomVisible =
-        activeElement.offsetTop + activeElement.offsetHeight <=
-        navElement.scrollTop + navElement.clientHeight;
-      if (!isTopVisible || !isBottomVisible) {
-        activeElement.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }
+      const top = activeElement.offsetTop;
+      const height = activeElement.offsetHeight;
+      setActiveStyles({ top, height });
     });
   }, [activeId]);
 
@@ -133,7 +150,8 @@ export default function TableOfContents() {
                 e.preventDefault();
                 const element = document.getElementById(heading.id);
                 if (!element) return;
-                const y = element.getBoundingClientRect().top + window.scrollY - 100;
+                const y =
+                  element.getBoundingClientRect().top + window.scrollY - 100;
                 window.scrollTo({ top: y, behavior: "smooth" });
                 // activeId는 IntersectionObserver가 스크롤 진행 순서대로 업데이트하도록 둡니다.
               }}

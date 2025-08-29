@@ -79,6 +79,7 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
+        {/* Preconnects for third-party origins used early */}
         <link
           rel="preconnect"
           href="https://avatars.githubusercontent.com"
@@ -97,6 +98,17 @@ export default function RootLayout({
         <link
           rel="preconnect"
           href="https://secure.notion-static.com"
+          crossOrigin="anonymous"
+        />
+        <link rel="dns-prefetch" href="https://giscus.app" />
+        <link rel="preconnect" href="https://giscus.app" crossOrigin="anonymous" />
+        <link
+          rel="dns-prefetch"
+          href="https://vitals.vercel-insights.com"
+        />
+        <link
+          rel="preconnect"
+          href="https://vitals.vercel-insights.com"
           crossOrigin="anonymous"
         />
       </head>

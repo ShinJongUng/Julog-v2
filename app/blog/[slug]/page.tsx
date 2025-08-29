@@ -10,9 +10,9 @@ import {
   generateFAQStructuredData,
 } from "@/lib/seo-utils";
 import type { Metadata } from "next";
-import TableOfContents from "@/components/TableOfContents";
 import Link from "next/link";
 import FloatingButtons from "@/components/FloatingButtons";
+import TableOfContents from "@/components/TableOfContents";
 import Giscus from "@/components/Giscus";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
