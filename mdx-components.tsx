@@ -1,6 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import Image from "next/image"; // Next.js Image 컴포넌트 사용
-import CodeBlock from "./components/CodeBlock";
+import CodeBlockServer from "./components/CodeBlockServer";
 import CodeCopyButton from "./components/CodeCopyButton";
 import { getOptimizedImageUrl, generateBlurDataURL } from "./lib/image-utils";
 import React from "react";
@@ -115,7 +115,8 @@ export function getMDXComponents(
         return (
           <div className="my-6 rounded-md overflow-hidden relative">
             <CodeCopyButton code={code} />
-            <CodeBlock code={code} language={language} />
+            {/* Server-side syntax highlight to avoid large client JS */}
+            <CodeBlockServer code={code} language={language} />
           </div>
         );
       }
