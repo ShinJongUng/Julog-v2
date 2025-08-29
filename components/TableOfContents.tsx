@@ -14,56 +14,11 @@ export default function TableOfContents() {
   const navRef = useRef<HTMLElement>(null);
   const [activeStyles, setActiveStyles] = useState({ top: 0, height: 0 });
 
-  const handleScroll = useCallback(() => {
-    const headingElements = Array.from(
-      document.querySelectorAll("h1[id], h2[id], h3[id]")
-    );
-
-    if (headingElements.length === 0) return;
-
-    const scrollThreshold = window.scrollY + 100;
-    const scrollHeight = document.documentElement.scrollHeight;
-    const clientHeight = document.documentElement.clientHeight;
-    const lastElement = headingElements[headingElements.length - 1] as HTMLElement;
-
-    const isNearBottom =
-      window.scrollY + clientHeight >= scrollHeight - 10 || 
-      lastElement.offsetTop <= scrollThreshold; 
-
-    let newActiveId = "";
-
-    if (isNearBottom) {
-      newActiveId = lastElement.id;
-    } else {
-      for (let i = headingElements.length - 1; i >= 0; i--) {
-        const element = headingElements[i] as HTMLElement;
-        if (element.offsetTop <= scrollThreshold) {
-          newActiveId = element.id;
-          break;
-        }
-      }
-      if (!newActiveId && headingElements.length > 0) {
-        newActiveId = headingElements[0].id;
-      }
-    }
-
-    setActiveId((currentActiveId) => {
-      if (newActiveId && newActiveId !== currentActiveId) {
-        return newActiveId;
-      }
-      return currentActiveId;
-    });
-  }, []);
-
   useEffect(() => {
-    const headingElementsRaw = Array.from(
-      document.querySelectorAll("h1, h2, h3")
-    );
+    const headingElementsRaw = Array.from(document.querySelectorAll("h1, h2, h3"));
 
     const contentHeadings = headingElementsRaw.filter((heading) => {
-      if (heading.tagName === "H1" && heading.closest("header")) {
-        return false;
-      }
+      if (heading.tagName === "H1" && heading.closest("header")) return false;
       return true;
     });
 
@@ -74,55 +29,59 @@ export default function TableOfContents() {
             ?.toLowerCase()
             .replace(/\s+/g, "-")
             .replace(/[^\w-]/g, "") ||
-          `heading-${Math.random().toString(36).substr(2, 9)}`;
+          `heading-${Math.random().toString(36).slice(2, 11)}`;
       }
-
       return {
         id: heading.id,
         text: heading.textContent || "",
-        level: parseInt(heading.tagName.charAt(1)), // h1=1, h2=2, h3=3
+        level: parseInt(heading.tagName.charAt(1)),
       };
     });
-
     setHeadings(tocHeadings);
 
-    // 스크롤 이벤트 리스너 등록 및 초기 실행
-    window.addEventListener("scroll", handleScroll);
-    handleScroll(); // 초기 활성 ID 설정
+    // IntersectionObserver로 활성 헤딩 추적 (강제 리플로우 완화)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // 가장 화면에 가깝게 보이는 헤딩을 선택
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        const top = visible[0] || entries.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        if (top) {
+          const id = top.target.getAttribute("id") || "";
+          if (id && id !== activeId) setActiveId(id);
+        }
+      },
+      {
+        rootMargin: "-100px 0px -66% 0px",
+        threshold: [0, 1],
+      }
+    );
 
-    // 컴포넌트 언마운트 시 이벤트 리스너 제거
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [handleScroll]);
+    contentHeadings.forEach((el) => observer.observe(el));
+
+    // 초기 활성 ID 설정
+    if (contentHeadings[0]?.id) setActiveId(contentHeadings[0].id);
+
+    return () => observer.disconnect();
+  }, [activeId]);
 
   useEffect(() => {
-    if (activeId && navRef.current) {
-      const activeElement = navRef.current.querySelector<HTMLAnchorElement>(
-        `a[href="#${activeId}"]`
-      );
-      if (activeElement) {
-        const navElement = navRef.current;
+    if (!activeId || !navRef.current) return;
+    const activeElement = navRef.current.querySelector<HTMLAnchorElement>(`a[href="#${activeId}"]`);
+    if (!activeElement) return;
 
-        setActiveStyles({
-          top: activeElement.offsetTop,
-          height: activeElement.offsetHeight,
-        });
-
-        const isTopVisible = activeElement.offsetTop >= navElement.scrollTop;
-        const isBottomVisible =
-          activeElement.offsetTop + activeElement.offsetHeight <=
-          navElement.scrollTop + navElement.clientHeight;
-
-        if (!isTopVisible || !isBottomVisible) {
-          activeElement.scrollIntoView({
-            behavior: "smooth",
-            block: "nearest",
-          });
-        }
+    // 읽기 작업을 rAF로 모아서 리플로우 최소화
+    requestAnimationFrame(() => {
+      setActiveStyles({ top: activeElement.offsetTop, height: activeElement.offsetHeight });
+      const navElement = navRef.current!;
+      const isTopVisible = activeElement.offsetTop >= navElement.scrollTop;
+      const isBottomVisible = activeElement.offsetTop + activeElement.offsetHeight <= navElement.scrollTop + navElement.clientHeight;
+      if (!isTopVisible || !isBottomVisible) {
+        activeElement.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
-    }
-  }, [activeId, headings]);
+    });
+  }, [activeId]);
 
   if (headings.length === 0) {
     return null;
