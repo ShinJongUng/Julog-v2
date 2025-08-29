@@ -12,7 +12,8 @@ const nextConfig = {
 
   // 번들 크기 최적화
   experimental: {
-    optimizePackageImports: ["lucide-react"],
+    // 자주 쓰는 유틸 패키지 최적화 (하위 경로로 자동 변경)
+    optimizePackageImports: ["lucide-react", "date-fns"],
     // Inline critical CSS and defer the rest via Critters
     optimizeCss: true,
     // Inline CSS where possible to avoid extra roundtrips

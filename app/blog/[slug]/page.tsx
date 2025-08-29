@@ -11,9 +11,9 @@ import {
 } from "@/lib/seo-utils";
 import type { Metadata } from "next";
 import Link from "next/link";
-import FloatingButtons from "@/components/FloatingButtons";
-import TableOfContents from "@/components/TableOfContents";
-import Giscus from "@/components/Giscus";
+import FloatingButtons from "@/components/lazy/FloatingButtonsLazy";
+import TableOfContents from "@/components/lazy/TableOfContentsLazy";
+import Giscus from "@/components/lazy/GiscusLazy";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 
