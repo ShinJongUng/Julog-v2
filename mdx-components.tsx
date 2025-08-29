@@ -25,7 +25,7 @@ export function getMDXComponents(
       return (
         <a
           href={href}
-          className="text-green-700 underline  hover:text-green-800  visited:text-green-700 focus-visible:outline outline-2 outline-green-500/60 rounded-[3px] transition-colors dark:text-green-300 dark:hover:text-green-200 dark:decoration-green-700 dark:hover:decoration-green-500"
+          className="text-green-700 underline  hover:text-green-800  visited:text-green-700 outline-2 transition-colors dark:text-green-300 dark:hover:text-green-200"
           {...(isExternal
             ? { target: "_blank", rel: "noopener noreferrer" }
             : {})}
