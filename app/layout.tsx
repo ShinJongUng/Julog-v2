@@ -121,6 +121,11 @@ body{margin:0;font-family:var(--font-sans),system-ui,sans-serif;line-height:inhe
           href="https://vitals.vercel-insights.com"
           crossOrigin="anonymous"
         />
+        {/* Google Search Console */}
+        <meta
+          name="google-site-verification"
+          content="b0kt3EponSzvvcSyhrDBcH18r-6z5_V2j6RYmHwGCu4"
+        />
       </head>
       <body
         className={cn(
