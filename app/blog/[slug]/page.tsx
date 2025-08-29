@@ -12,8 +12,8 @@ import {
 import type { Metadata } from "next";
 import Link from "next/link";
 import FloatingButtons from "@/components/lazy/FloatingButtonsLazy";
-import TableOfContents from "@/components/lazy/TableOfContentsLazy";
-import Giscus from "@/components/lazy/GiscusLazy";
+import TableOfContentsSection from "@/components/lazy/TableOfContentsSection";
+import CommentsSection from "@/components/lazy/CommentsSection";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 
@@ -160,17 +160,14 @@ export default async function PostPage({ params }: PostPageProps) {
           <footer className="mt-8 md:mt-12 border-t pt-6">
             {/* 댓글 섹션은 여기 있지만 화면에 직접 표시되지 않고 버튼을 통해 이동함 */}
             <div id="comments" className="mt-8 scroll-mt-24">
-              <Giscus />
+              <CommentsSection />
             </div>
           </footer>
         </article>
 
         {/* 우측 목차 영역 */}
         <aside className="hidden lg:block">
-          <div className="sticky top-20">
-            <h4 className="text-sm font-semibold mb-4">목차</h4>
-            <TableOfContents />
-          </div>
+          <TableOfContentsSection />
         </aside>
       </div>
 
