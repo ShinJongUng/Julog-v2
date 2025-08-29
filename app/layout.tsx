@@ -84,6 +84,21 @@ export default function RootLayout({
           href="https://avatars.githubusercontent.com"
           crossOrigin="anonymous"
         />
+        <link
+          rel="dns-prefetch"
+          href="https://prod-files-secure.s3.us-west-2.amazonaws.com"
+        />
+        <link
+          rel="preconnect"
+          href="https://prod-files-secure.s3.us-west-2.amazonaws.com"
+          crossOrigin="anonymous"
+        />
+        <link rel="dns-prefetch" href="https://secure.notion-static.com" />
+        <link
+          rel="preconnect"
+          href="https://secure.notion-static.com"
+          crossOrigin="anonymous"
+        />
       </head>
       <body
         className={cn(

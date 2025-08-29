@@ -32,8 +32,8 @@ const HeroImage = ({
         alt={alt}
         fill
         priority
-        placeholder="blur"
-        blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQ1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxtc3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjNmNGY2Ii8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9IiNlNWU3ZWIiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmM2Y0ZjYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2EpIi8+PGNpcmNsZSBjeD0iNDAwIiBjeT0iMjI1IiBy0iIxMDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzk5OWZmZiIgc3Ryb2tlLXdpZHRoPSI4IiBvcGFjaXR5PSIwLjMiLz48cGF0aCBkPSJNNDAwIDIyNWgtMzAwbTE1MC0xNTAgMTUwIDE1MHoiIGZpbGw9IiM5OTlmZmYiIG9wYWNpdHk9IjAuMyIvPjwvc3ZnPg=="
+        placeholder="empty"
+        fetchPriority="high"
         sizes="100vw"
         quality={90}
         className={`object-cover transition-opacity duration-300 ${

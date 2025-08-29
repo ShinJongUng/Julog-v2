@@ -95,6 +95,19 @@ const nextConfig = {
           },
         ],
       },
+      // Favicon / Icons 캐시 정책
+      {
+        source: "/favicon.ico",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      {
+        source: "/icons/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
       // 폰트 파일 캐시 정책
       {
         source: "/fonts/:path*",
@@ -112,6 +125,16 @@ const nextConfig = {
           {
             key: "Cache-Control",
             value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      // Next Image 최적화 엔드포인트 캐시 정책
+      {
+        source: "/_next/image",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=600, stale-while-revalidate=86400",
           },
         ],
       },
@@ -145,8 +168,8 @@ const nextConfig = {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // 이미지 최적화 성능 향상
-    minimumCacheTTL: 60,
+    // 이미지 최적화 성능 향상 (서명 URL 주기 고려)
+    minimumCacheTTL: 300,
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },

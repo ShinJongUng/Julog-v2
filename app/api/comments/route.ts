@@ -11,8 +11,13 @@ export async function GET(request: NextRequest) {
     // 댓글 데이터 가져오기
     const comments = await fetchRecentComments(count);
 
-    // 응답 반환
-    return NextResponse.json(comments);
+    // 응답 반환 (짧은 캐시 적용)
+    return new NextResponse(JSON.stringify(comments), {
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "public, max-age=60, stale-while-revalidate=300",
+      },
+    });
   } catch (error) {
     console.error("댓글 API 오류:", error);
     return NextResponse.json(

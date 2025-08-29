@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface TOCHeading {
   id: string;
@@ -131,25 +130,12 @@ export default function TableOfContents() {
 
   return (
     <nav className="text-sm relative" ref={navRef}>
-      <AnimatePresence>
-        {activeId && (
-          <motion.div
-            className="absolute w-[calc(100%-8px)] bg-green-50 dark:bg-green-900/20 rounded z-0"
-            layoutId="activeHeadingBackground"
-            transition={{
-              type: "spring",
-              stiffness: 500,
-              damping: 30,
-              duration: 0.3,
-            }}
-            style={{
-              top: activeStyles.top,
-              height: activeStyles.height,
-              left: 4,
-            }}
-          />
-        )}
-      </AnimatePresence>
+      {activeId && (
+        <div
+          className="absolute w-[calc(100%-8px)] bg-green-50 dark:bg-green-900/20 rounded z-0 transition-all"
+          style={{ top: activeStyles.top, height: activeStyles.height, left: 4 }}
+        />
+      )}
 
       <ul className="space-y-2 relative z-10">
         {headings.map((heading, index) => (
@@ -157,7 +143,7 @@ export default function TableOfContents() {
             key={index}
             style={{ paddingLeft: `${(heading.level - 1) * 0.75}rem` }}
           >
-            <motion.a
+            <a
               href={`#${heading.id}`}
               className={`block py-1 px-2 rounded transition-colors hover:bg-green-100 dark:hover:bg-green-900/30 relative z-10 ${
                 activeId === heading.id
@@ -169,32 +155,15 @@ export default function TableOfContents() {
                 const element = document.getElementById(heading.id);
                 if (element) {
                   window.scrollTo({
-                    top: (element as HTMLElement).offsetTop - 100, // 100px 위쪽으로 스크롤 (여백)
+                    top: (element as HTMLElement).offsetTop - 100,
                     behavior: "smooth",
                   });
                   setActiveId(heading.id);
                 }
               }}
-              initial={{ opacity: 0.8 }}
-              animate={{
-                opacity: 1,
-                transition: { duration: 0.3 },
-              }}
-              whileHover={{ x: 2 }}
-              whileTap={{ scale: 0.98 }}
             >
-              <motion.span
-                animate={{
-                  color:
-                    activeId === heading.id
-                      ? "var(--color-green-600)"
-                      : "var(--color-foreground-80)",
-                }}
-                transition={{ duration: 0.3 }}
-              >
-                {heading.text}
-              </motion.span>
-            </motion.a>
+              <span>{heading.text}</span>
+            </a>
           </li>
         ))}
       </ul>
