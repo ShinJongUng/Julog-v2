@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface TOCHeading {
   id: string;
@@ -15,7 +15,9 @@ export default function TableOfContents() {
   const [activeStyles, setActiveStyles] = useState({ top: 0, height: 0 });
 
   useEffect(() => {
-    const headingElementsRaw = Array.from(document.querySelectorAll("h1, h2, h3"));
+    const headingElementsRaw = Array.from(
+      document.querySelectorAll("h1, h2, h3")
+    );
 
     const contentHeadings = headingElementsRaw.filter((heading) => {
       if (heading.tagName === "H1" && heading.closest("header")) return false;
@@ -46,7 +48,11 @@ export default function TableOfContents() {
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        const top = visible[0] || entries.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        const top =
+          visible[0] ||
+          entries.sort(
+            (a, b) => a.boundingClientRect.top - b.boundingClientRect.top
+          )[0];
         if (top) {
           const id = top.target.getAttribute("id") || "";
           if (id && id !== activeId) setActiveId(id);
@@ -68,15 +74,22 @@ export default function TableOfContents() {
 
   useEffect(() => {
     if (!activeId || !navRef.current) return;
-    const activeElement = navRef.current.querySelector<HTMLAnchorElement>(`a[href="#${activeId}"]`);
+    const activeElement = navRef.current.querySelector<HTMLAnchorElement>(
+      `a[href="#${activeId}"]`
+    );
     if (!activeElement) return;
 
     // 읽기 작업을 rAF로 모아서 리플로우 최소화
     requestAnimationFrame(() => {
-      setActiveStyles({ top: activeElement.offsetTop, height: activeElement.offsetHeight });
+      setActiveStyles({
+        top: activeElement.offsetTop,
+        height: activeElement.offsetHeight,
+      });
       const navElement = navRef.current!;
       const isTopVisible = activeElement.offsetTop >= navElement.scrollTop;
-      const isBottomVisible = activeElement.offsetTop + activeElement.offsetHeight <= navElement.scrollTop + navElement.clientHeight;
+      const isBottomVisible =
+        activeElement.offsetTop + activeElement.offsetHeight <=
+        navElement.scrollTop + navElement.clientHeight;
       if (!isTopVisible || !isBottomVisible) {
         activeElement.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
@@ -92,7 +105,11 @@ export default function TableOfContents() {
       {activeId && (
         <div
           className="absolute w-[calc(100%-8px)] bg-green-50 dark:bg-green-900/20 rounded z-0 transition-all"
-          style={{ top: activeStyles.top, height: activeStyles.height, left: 4 }}
+          style={{
+            top: activeStyles.top,
+            height: activeStyles.height,
+            left: 4,
+          }}
         />
       )}
 
