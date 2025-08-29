@@ -1,6 +1,7 @@
 import type { MDXComponents } from "mdx/types";
 import Image from "next/image"; // Next.js Image 컴포넌트 사용
-import CodeBlockServer from "./components/CodeBlockServer";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import CodeCopyButton from "./components/CodeCopyButton";
 import { getOptimizedImageUrl, generateBlurDataURL } from "./lib/image-utils";
 import React from "react";
@@ -115,8 +116,15 @@ export function getMDXComponents(
         return (
           <div className="my-6 rounded-md overflow-hidden relative">
             <CodeCopyButton code={code} />
-            {/* Server-side syntax highlight to avoid large client JS */}
-            <CodeBlockServer code={code} language={language} />
+            <SyntaxHighlighter
+              language={language}
+              style={tomorrow}
+              customStyle={{ margin: 0, borderRadius: "0.375rem" }}
+              showLineNumbers
+              wrapLongLines
+            >
+              {code}
+            </SyntaxHighlighter>
           </div>
         );
       }
@@ -151,11 +159,10 @@ export function getMDXComponents(
       // Notion 이미지 최적화
       const optimizedSrc = getOptimizedImageUrl(src);
 
-      // 히어로 이미지가 없으면 본문 첫 이미지를 LCP 후보로 승격
-      const isFirstContentImage = isFirstImage && !hasHero;
-      const shouldPrioritize = isFirstContentImage;
-      const shouldLazyLoad = !isFirstContentImage;
-      const fetchPriority = isFirstContentImage ? "high" : "auto";
+      // LCP 최적화: 첫 번째 이미지만 priority 적용
+      const shouldPrioritize = isFirstImage;
+      const shouldLazyLoad = !isFirstImage;
+      const fetchPriority = isFirstImage ? "high" : "auto";
 
       return (
         <span className="my-6 w-full flex justify-center">
@@ -165,11 +172,12 @@ export function getMDXComponents(
             width={validWidth}
             height={validHeight}
             className="rounded-xl mx-auto max-w-full w-auto h-auto shadow-md"
-            placeholder="empty"
+            placeholder="blur"
+            blurDataURL={generateBlurDataURL(8, 6)}
             priority={shouldPrioritize}
             loading={shouldLazyLoad ? "lazy" : "eager"}
-            quality={shouldPrioritize ? 80 : 70}
-            sizes="(max-width: 1024px) 100vw, 720px"
+            quality={isFirstImage ? 90 : 75}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
             fetchPriority={fetchPriority}
             {...rest}
           />
