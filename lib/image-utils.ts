@@ -1,15 +1,9 @@
 /**
- * Notion 이미지 URL을 프록시 URL로 변환
- * Notion 이미지는 임시 URL이고 CORS 문제가 있어서 프록시를 통해 처리
+ * 이미지 URL을 그대로 반환합니다.
+ * 기존의 프록시(/api/image-proxy) 사용을 제거하여 Next/Image가 직접 최적화하도록 변경.
  */
-export function getOptimizedImageUrl(notionImageUrl: string): string {
-  // Notion 이미지 URL인지 확인
-  if (notionImageUrl.includes("prod-files-secure.s3.us-west-2.amazonaws.com")) {
-    return `/api/image-proxy?url=${encodeURIComponent(notionImageUrl)}`;
-  }
-
-  // 일반 이미지 URL은 그대로 반환
-  return notionImageUrl;
+export function getOptimizedImageUrl(src: string): string {
+  return src;
 }
 
 /**
