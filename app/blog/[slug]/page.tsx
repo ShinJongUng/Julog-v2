@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllPostsMeta, getPostBySlug } from "@/lib/posts";
 import { formatDate } from "@/lib/utils";
-import { HeroImage } from "@/components/PostListItem";
 import {
   generateCompleteMetadata,
   generateArticleStructuredData,
@@ -142,9 +141,6 @@ export default async function PostPage({ params }: PostPageProps) {
               {formatDate(meta.date)}
             </p>
           </header>
-
-          {/* 히어로 이미지 (LCP 최적화) */}
-          <HeroImage src={meta.heroImage || meta.image} alt={meta.title} />
 
           <MDXRemote
             source={content}

@@ -3,11 +3,39 @@ import Link from "next/link";
 import { PostMeta } from "@/lib/posts";
 import { formatDate } from "@/lib/utils";
 
+// 원격 이미지 호스트 화이트리스트(Next 이미지 최적화 대상)
+const allowedHosts = new Set([
+  "avatars.githubusercontent.com",
+  "prod-files-secure.s3.us-west-2.amazonaws.com",
+  "secure.notion-static.com",
+]);
+const isAllowedRemote = (url: string) => {
+  try {
+    const u = new URL(url);
+    return (
+      (u.protocol === "https:" || u.protocol === "http:") &&
+      allowedHosts.has(u.hostname)
+    );
+  } catch {
+    return false;
+  }
+};
+
 // 히어로 이미지 전용 컴포넌트 (LCP 최적화)
-const HeroImage = ({ src, alt, className }: { src?: string; alt: string; className?: string }) => {
+const HeroImage = ({
+  src,
+  alt,
+  className,
+}: {
+  src?: string;
+  alt: string;
+  className?: string;
+}) => {
   if (!src) return null;
   return (
-    <div className={`relative aspect-[16/9] w-full overflow-hidden rounded-xl bg-muted/50 mb-8 ${className}`}>
+    <div
+      className={`relative aspect-[16/9] w-full overflow-hidden rounded-xl bg-muted/50 mb-8 ${className}`}
+    >
       <Image
         src={src}
         alt={alt}
@@ -18,6 +46,7 @@ const HeroImage = ({ src, alt, className }: { src?: string; alt: string; classNa
         sizes="100vw"
         quality={80}
         className="object-cover"
+        unoptimized={!isAllowedRemote(src)}
       />
     </div>
   );
@@ -56,7 +85,7 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
             </p>
 
             {post.tags && Array.isArray(post.tags) && post.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-1">
+              <div className="flex flex-wrap gap-1.5 mt-1 items-center">
                 {post.tags.slice(0, 3).map((tag) => (
                   <span
                     key={tag}
@@ -78,7 +107,6 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
             </p>
           </div>
           <div className="relative aspect-[4/3] max-w-36 w-full overflow-hidden rounded-md bg-muted/50">
-
             {post.image ? (
               <Image
                 src={post.image}
@@ -90,6 +118,7 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
                 quality={70}
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 loading={shouldPrioritize ? "eager" : "lazy"}
+                unoptimized={!isAllowedRemote(post.image)}
               />
             ) : (
               !imageError && (

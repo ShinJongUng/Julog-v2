@@ -137,7 +137,6 @@ export default function SimpleRecentComments({
 
                 <div className="mt-2 text-xs text-muted-foreground font-medium">
                   <span className="group-hover:text-green-600 transition-colors inline-flex items-center">
-                    <span className="w-2 h-2 rounded-full bg-green-500 mr-1 opacity-70"></span>
                     {postTitle}
                   </span>
                 </div>

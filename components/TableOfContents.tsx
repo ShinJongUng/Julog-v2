@@ -27,7 +27,10 @@ export default function TableOfContents() {
       );
 
       const contentHeadings = headingElementsRaw.filter((heading) => {
+        // 헤더 영역의 H1은 제외
         if (heading.tagName === "H1" && heading.closest("header")) return false;
+        // 댓글, 사이드 섹션 등 TOC 제외 마크가 있는 컨테이너 내부의 헤딩은 제외
+        if (heading.closest('[data-toc-exclude]')) return false;
         return true;
       });
 
@@ -143,7 +146,7 @@ export default function TableOfContents() {
               href={`#${heading.id}`}
               className={`block py-1 px-2 rounded transition-colors hover:bg-green-100 dark:hover:bg-green-900/30 relative z-10 ${
                 activeId === heading.id
-                  ? "text-green-600 dark:text-green-400 font-medium"
+                  ? "text-green-900 dark:text-green-400 font-medium"
                   : "text-foreground/80 hover:text-foreground"
               }`}
               onClick={(e) => {
