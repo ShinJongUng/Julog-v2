@@ -49,7 +49,7 @@ export default function Giscus() {
 
     // 초기 렌더가 끝난 후(메인 콘텐츠 그려진 뒤)에 로드
     if ("requestIdleCallback" in window) {
-      (window as any).requestIdleCallback(load, { timeout: 2000 });
+      window.requestIdleCallback(load, { timeout: 2000 });
     } else {
       setTimeout(load, 1200);
     }
