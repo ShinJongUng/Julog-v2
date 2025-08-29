@@ -29,7 +29,7 @@ export async function generateMetadata({
     title: `${decodedTag} 관련 글`,
     description: `${decodedTag} 태그가 포함된 모든 글`,
     openGraph: {
-      title: `${decodedTag} 관련 글 - julog`,
+      title: `${decodedTag} 관련 글`,
       description: `${decodedTag} 태그가 포함된 모든 글`,
       type: "website",
     },
