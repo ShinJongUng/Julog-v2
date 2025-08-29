@@ -15,9 +15,7 @@ export default function TableOfContents() {
   const [activeStyles, setActiveStyles] = useState({ top: 0, height: 0 });
 
   useEffect(() => {
-    const headingElementsRaw = Array.from(
-      document.querySelectorAll("h1, h2, h3")
-    );
+    const headingElementsRaw = Array.from(document.querySelectorAll("h1, h2, h3"));
 
     const contentHeadings = headingElementsRaw.filter((heading) => {
       if (heading.tagName === "H1" && heading.closest("header")) return false;
@@ -41,36 +39,41 @@ export default function TableOfContents() {
     });
     setHeadings(tocHeadings);
 
-    // IntersectionObserver로 활성 헤딩 추적 (강제 리플로우 완화)
+    // IntersectionObserver로 활성 헤딩 추적 (가벼운 기준)
     const observer = new IntersectionObserver(
       (entries) => {
-        // 가장 화면에 가깝게 보이는 헤딩을 선택
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        const top =
-          visible[0] ||
-          entries.sort(
-            (a, b) => a.boundingClientRect.top - b.boundingClientRect.top
-          )[0];
-        if (top) {
-          const id = top.target.getAttribute("id") || "";
-          if (id && id !== activeId) setActiveId(id);
-        }
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute("id") || "";
+            if (id) setActiveId(id);
+          }
+        });
       },
-      {
-        rootMargin: "-100px 0px -66% 0px",
-        threshold: [0, 1],
-      }
+      { rootMargin: "0px 0px -60% 0px", threshold: 0 }
     );
 
     contentHeadings.forEach((el) => observer.observe(el));
 
+    // 바닥 부근에서 마지막 헤딩 활성화
+    const onScrollBottom = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 2
+      ) {
+        const last = tocHeadings[tocHeadings.length - 1];
+        if (last) setActiveId(last.id);
+      }
+    };
+    window.addEventListener("scroll", onScrollBottom, { passive: true });
+
     // 초기 활성 ID 설정
     if (contentHeadings[0]?.id) setActiveId(contentHeadings[0].id);
 
-    return () => observer.disconnect();
-  }, [activeId]);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", onScrollBottom);
+    };
+  }, []);
 
   useEffect(() => {
     if (!activeId || !navRef.current) return;
