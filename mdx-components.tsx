@@ -1,6 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import Image from "next/image"; // Next.js Image 컴포넌트 사용
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import dynamic from "next/dynamic";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import CodeCopyButton from "./components/CodeCopyButton";
 import { getOptimizedImageUrl, generateBlurDataURL } from "./lib/image-utils";
@@ -15,6 +15,11 @@ export function resetImageIndex() {
 }
 
 export function getMDXComponents(components: MDXComponents): MDXComponents {
+  // 코드 하이라이터는 지연 로딩해 초기 JS를 줄입니다.
+  const SyntaxHighlighter = dynamic(
+    () => import("react-syntax-highlighter").then((m) => m.Prism),
+    { ssr: false, loading: () => <pre style={{ margin: 0 }} /> }
+  );
   return {
     h1: ({ children, id }) => (
       <h1
@@ -157,12 +162,10 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
       // Notion 이미지 최적화
       const optimizedSrc = getOptimizedImageUrl(src);
 
-      // LCP 최적화: 첫 번째 이미지만 priority 적용
-      const shouldPrioritize = isFirstImage;
-      const shouldLazyLoad = !isFirstImage;
-
-      // LCP 개선을 위한 추가 로딩 전략
-      const fetchPriority = isFirstImage ? "high" : "auto";
+      // 본문 이미지는 항상 지연 로딩하여 LCP를 히어로 이미지에 집중
+      const shouldPrioritize = false;
+      const shouldLazyLoad = true;
+      const fetchPriority = "auto";
 
       return (
         <span className="my-6 w-full flex justify-center">
@@ -172,8 +175,7 @@ export function getMDXComponents(components: MDXComponents): MDXComponents {
             width={validWidth}
             height={validHeight}
             className="rounded-xl mx-auto max-w-full w-auto h-auto shadow-md"
-            placeholder="blur"
-            blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIyNSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxtc3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZjNmNGY2Ii8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9IiNlNWU3ZWIiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmM2Y0ZjYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2EpIi8+PGNpcmNsZSBjeD0iMjAwIiBjeT0iMTEyIiByPSI2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOWNhM2FmIiBzdHJva2Utd2lkdGg9IjQiIG9wYWNpdHk9IjAuMyIvPjxwYXRoIGQ9Ik0xNjAgMTMwaDYwbTEtNjAtMjBoNjB2NjBoLTYwdi02MHoiIGZpbGw9IiM5Y2EzYWYiIG9wYWNpdHk9IjAuMyIvPjwvc3ZnPg=="
+            placeholder="empty"
             priority={shouldPrioritize}
             loading={shouldLazyLoad ? "lazy" : "eager"}
             quality={isFirstImage ? 90 : 75}
