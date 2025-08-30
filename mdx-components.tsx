@@ -39,8 +39,8 @@ export function getMDXComponents(
         const videoId = ytMatch[1];
         const embedUrl = `https://www.youtube.com/embed/${videoId}`;
         return (
-          <div className="my-6 w-full max-w-full not-prose">
-            <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
+          <span className="my-6 block w-full max-w-full not-prose">
+            <span className="relative block w-full" style={{ paddingTop: "56.25%" }}>
               <iframe
                 src={embedUrl}
                 className="absolute inset-0 h-full w-full rounded-xl"
@@ -48,8 +48,8 @@ export function getMDXComponents(
                 allowFullScreen
                 title="YouTube video"
               />
-            </div>
-          </div>
+            </span>
+          </span>
         );
       }
 
@@ -215,9 +215,9 @@ export function getMDXComponents(
           : undefined;
 
       return (
-        <figure className="my-6 w-full flex flex-col items-center">
-          <div
-            className="relative w-full max-w-full"
+        <span className="my-6 block w-full">
+          <span
+            className="relative block w-full max-w-full"
             style={{
               aspectRatio: `${validWidth}/${validHeight}`,
               maxWidth: `${validWidth}px`,
@@ -240,13 +240,13 @@ export function getMDXComponents(
               }}
               {...rest}
             />
-          </div>
+          </span>
           {caption && (
-            <figcaption className="mt-2 text-sm text-muted-foreground text-center">
+            <span className="mt-2 block text-sm text-muted-foreground text-center">
               {caption}
-            </figcaption>
+            </span>
           )}
-        </figure>
+        </span>
       );
     },
 
