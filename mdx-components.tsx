@@ -201,12 +201,12 @@ export function getMDXComponents(
               alt={alt || "이미지"}
               width={validWidth}
               height={validHeight}
-              className="rounded-xl shadow-md object-contain"
+              className="rounded-xl object-contain"
               placeholder="blur"
               blurDataURL={blurDataURL}
               priority={isFirstImage}
               loading={isFirstImage ? "eager" : "lazy"}
-              quality={60} // 화질 향상으로 더 선명한 이미지
+              quality={50} // 화질 향상으로 더 선명한 이미지
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 800px"
               style={{
                 width: "100%",
