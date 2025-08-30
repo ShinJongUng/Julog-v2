@@ -26,7 +26,7 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
       >
         <div className="flex flex-col-reverse sm:flex-row sm:items-start sm:gap-6">
           <div className="flex-1 mt-4 sm:mt-0 sm:mb-0 flex flex-col">
-            <h2 className="text-xl font-semibold mb-1 group-hover:text-green-600 dark:group-hover:text-green-500 transition-colors duration-300">
+            <h2 className="text-xl font-bold mb-1 group-hover:text-green-600 dark:group-hover:text-green-500 transition-colors duration-300">
               {post.title}
             </h2>
             <p className="text-muted-foreground text-sm mb-2 line-clamp-2">

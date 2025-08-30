@@ -1,55 +1,10 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
-
-const hakgyoansim_allimjang = localFont({
-  src: [
-    {
-      path: "../public/fonts/Hakgyoansim-Allimjang-R.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/Hakgyoansim-Allimjang-B.woff2",
-      weight: "700",
-      style: "normal",
-    },
-  ],
-  variable: "--font-title",
-  display: "swap",
-  preload: true,
-});
-
-const pretendard = localFont({
-  src: [
-    {
-      path: "../public/fonts/Pretendard-Regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/Pretendard-Medium.woff2",
-      weight: "500",
-      style: "normal",
-    },
-  ],
-  variable: "--font-sans",
-  display: "swap",
-  preload: true,
-  fallback: [
-    "system-ui",
-    "-apple-system",
-    "BlinkMacSystemFont",
-    "Segoe UI",
-    "Roboto",
-    "sans-serif",
-  ],
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://blog.jongung.com"),
@@ -84,9 +39,22 @@ export default function RootLayout({
             __html: `/* Critical CSS - minimal */
 *{box-sizing:border-box}
 html{line-height:1.5;-webkit-text-size-adjust:100%}
+/* Define font vars early to prevent FOIT/FOUT */
+:root{--font-sans:"NanumSquareRound","Apple SD Gothic Neo","Noto Sans KR","Apple Color Emoji","Segoe UI Emoji",system-ui,sans-serif;--font-title:"NanumSquare","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif}
 body{margin:0;font-family:var(--font-sans),system-ui,sans-serif;line-height:inherit;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 `,
           }}
+        />
+        {/* Webfont CSS (CDN) */}
+        {/* NanumSquare (titles) */}
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/nanumsquare.css"
+        />
+        {/* NanumSquare Round (body) */}
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@kfonts/nanum-square-round@latest/index.css"
         />
         {/* Preconnects for third-party origins used early */}
         <link
@@ -130,8 +98,6 @@ body{margin:0;font-family:var(--font-sans),system-ui,sans-serif;line-height:inhe
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
-          pretendard.variable,
-          hakgyoansim_allimjang.variable
         )}
       >
         <Analytics />

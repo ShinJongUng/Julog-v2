@@ -20,8 +20,8 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)"], // Pretendard 변수 사용
-        title: ["var(--font-title)"], // 학교안심알림장 변수 사용
+        sans: ["var(--font-sans)"], // Body: NanumSquareRound
+        title: ["var(--font-title)"], // Headings: NanumSquare
       },
       colors: {
         border: "hsl(var(--border))",
