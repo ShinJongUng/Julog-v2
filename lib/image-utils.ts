@@ -10,10 +10,17 @@ export function getProxyImageUrl(blockId: string, fileName?: string): string {
 }
 
 /**
- * 일반 이미지 URL 처리 (Notion이 아닌 경우)
+ * 이미지 URL 최적화 처리
+ * Notion API 이미지인 경우 Next.js Image 최적화를 통해 AVIF/WebP 변환
  */
 export function getOptimizedImageUrl(src: string): string {
-  // MDX 변환에서 이미 /api/image/[blockId]/...로 변환됨. 기타 외부 이미지는 그대로 사용.
+  // Notion API 이미지인 경우 (_next/image를 통해 최적화)
+  if (src.startsWith("/api/image/")) {
+    // Next.js Image 컴포넌트가 자동으로 /_next/image 경로를 통해 최적화함
+    return src;
+  }
+
+  // 외부 이미지는 그대로 사용 (remotePatterns에 등록된 경우 자동 최적화됨)
   return src;
 }
 

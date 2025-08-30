@@ -165,21 +165,22 @@ export function getMDXComponents(
       const numHeight =
         typeof height === "string" ? parseInt(height, 10) : height;
 
-      // 기본값 - 더 작은 크기로 설정하여 로딩 속도 개선
+      // 레이아웃 시프트 방지를 위해 더 적절한 기본값 설정
       const validWidth =
-        typeof numWidth === "number" && numWidth > 0
-          ? Math.min(numWidth, 800)
-          : 640;
+        typeof numWidth === "number" && numWidth > 0 ? numWidth : 800;
       const validHeight =
         typeof numHeight === "number" && numHeight > 0
-          ? Math.min(numHeight, 600)
-          : 360;
+          ? numHeight
+          : Math.round(validWidth * 0.6); // 16:10 비율로 기본값 설정
 
-      // 이미지 최적화 (프록시 API 사용으로 단순화됨)
+      // 이미지 최적화 - API 라우트를 Next.js Image 최적화와 함께 사용
       const optimizedSrc = getOptimizedImageUrl(src);
 
-      // 개선된 블러 플레이스홀더 생성
-      const blurDataURL = generateBlurDataURL(8, 6);
+      // 정확한 비율의 블러 플레이스홀더 생성
+      const aspectRatio = validHeight / validWidth;
+      const blurWidth = 16;
+      const blurHeight = Math.round(blurWidth * aspectRatio);
+      const blurDataURL = generateBlurDataURL(blurWidth, blurHeight);
 
       const caption =
         typeof title === "string" && title.trim().length > 0
@@ -188,20 +189,33 @@ export function getMDXComponents(
 
       return (
         <figure className="my-6 w-full flex flex-col items-center">
-          <Image
-            src={optimizedSrc}
-            alt={alt || "이미지"}
-            width={validWidth}
-            height={validHeight}
-            className="rounded-xl mx-auto max-w-full w-auto h-auto shadow-md"
-            placeholder="blur"
-            blurDataURL={blurDataURL}
-            priority={isFirstImage}
-            loading={isFirstImage ? "eager" : "lazy"}
-            quality={40} // 더 낮은 화질로 압축률 향상
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 736px" // 더 최적화된 반응형 사이즈
-            {...rest}
-          />
+          <div
+            className="relative w-full max-w-full"
+            style={{
+              aspectRatio: `${validWidth}/${validHeight}`,
+              maxWidth: `${validWidth}px`,
+            }}
+          >
+            <Image
+              src={optimizedSrc}
+              alt={alt || "이미지"}
+              width={validWidth}
+              height={validHeight}
+              className="rounded-xl shadow-md object-contain"
+              placeholder="blur"
+              blurDataURL={blurDataURL}
+              priority={isFirstImage}
+              loading={isFirstImage ? "eager" : "lazy"}
+              quality={60} // 화질 향상으로 더 선명한 이미지
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 800px"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "contain",
+              }}
+              {...rest}
+            />
+          </div>
           {caption && (
             <figcaption className="mt-2 text-sm text-muted-foreground text-center">
               {caption}
