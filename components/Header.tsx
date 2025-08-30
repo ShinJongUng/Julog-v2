@@ -19,7 +19,15 @@ export default function Header() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+          <nav className="items-center gap-4 text-sm">
+            <Link
+              href="/about"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              About
+            </Link>
+          </nav>
           <ThemeToggle />
         </div>
       </div>
