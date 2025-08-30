@@ -64,7 +64,7 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
                 priority={shouldPrioritize}
                 placeholder="empty"
                 sizes="(max-width: 640px) 100vw, 128px"
-                quality={70}
+                quality={55}
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 loading={shouldPrioritize ? "eager" : "lazy"}
               />

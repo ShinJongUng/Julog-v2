@@ -187,8 +187,8 @@ export function getMDXComponents(
             placeholder="empty"
             priority={isFirstImage}
             loading={isFirstImage ? "eager" : "lazy"}
-            quality={70}
-            sizes="(max-width: 420px) 100vw, (max-width: 768px) 95vw, (max-width: 1200px) 85vw, 600px"
+            quality={50}
+            sizes="(min-width: 1024px) 736px, 92vw"
             {...rest}
           />
           {caption && (
