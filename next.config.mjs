@@ -19,7 +19,7 @@ const nextConfig = {
     // Inline CSS where possible to avoid extra roundtrips
     inlineCss: true,
     // Create more granular per-route CSS chunks
-    cssChunking: 'strict',
+    cssChunking: "strict",
   },
 
   // 서버 패키지 설정
@@ -106,13 +106,19 @@ const nextConfig = {
       {
         source: "/favicon.ico",
         headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
         ],
       },
       {
         source: "/icons/:path*",
         headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
         ],
       },
       // 폰트 파일 캐시 정책
@@ -172,14 +178,19 @@ const nextConfig = {
         hostname: "secure.notion-static.com",
       },
     ],
+    // AVIF 우선순위로 더 나은 압축률 제공 (WebP보다 20-50% 더 효율적)
     formats: ["image/avif", "image/webp"],
-    // 더 작은 후보만 노출해 과도한 해상도 요청 방지
-    deviceSizes: [360, 414, 640, 750, 828, 960],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // 이미지 최적화 캐시 (서명 URL 주기 고려)
-    minimumCacheTTL: 600,
+    // 모바일 우선순위로 불필요한 해상도 제거 및 더 작은 기본 크기
+    deviceSizes: [320, 360, 414, 640, 750, 828],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 320],
+    // 더 긴 캐시 시간으로 재요청 감소
+    minimumCacheTTL: 86400, // 24시간 (기존 10분에서 대폭 증가)
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // 이미지 품질 최적화 (기본 75에서 40으로 더 낮춤 - WebP/AVIF의 효율성으로 시각적 품질 유지)
+    quality: 40,
+    // 이미지 압축 최적화 - 더 aggressive한 압축으로 파일 크기 감소
+    unoptimized: false, // Next.js 최적화 활성화
   },
   // MDX 설정 제거 - Notion 기반으로 변경
 };

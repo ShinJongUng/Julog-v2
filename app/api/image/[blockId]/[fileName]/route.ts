@@ -9,7 +9,9 @@ const urlCache = new Map<string, { url: string; expiry: number }>();
 const NOTION_API_BASE = "https://api.notion.com/v1";
 const NOTION_VERSION = "2022-06-28";
 
-async function resolveSignedUrlFromBlock(blockId: string): Promise<string | null> {
+async function resolveSignedUrlFromBlock(
+  blockId: string
+): Promise<string | null> {
   try {
     const cached = urlCache.get(blockId);
     const now = Date.now();
@@ -41,16 +43,20 @@ async function resolveSignedUrlFromBlock(blockId: string): Promise<string | null
     let url: string | null = null;
     if (type === "image" && data.image) {
       if (data.image.type === "file") url = data.image.file?.url ?? null;
-      else if (data.image.type === "external") url = data.image.external?.url ?? null;
+      else if (data.image.type === "external")
+        url = data.image.external?.url ?? null;
     } else if (type === "file" && data.file) {
       if (data.file.type === "file") url = data.file.file?.url ?? null;
-      else if (data.file.type === "external") url = data.file.external?.url ?? null;
+      else if (data.file.type === "external")
+        url = data.file.external?.url ?? null;
     } else if (type === "pdf" && data.pdf) {
       if (data.pdf.type === "file") url = data.pdf.file?.url ?? null;
-      else if (data.pdf.type === "external") url = data.pdf.external?.url ?? null;
+      else if (data.pdf.type === "external")
+        url = data.pdf.external?.url ?? null;
     } else if (type === "video" && data.video) {
       if (data.video.type === "file") url = data.video.file?.url ?? null;
-      else if (data.video.type === "external") url = data.video.external?.url ?? null;
+      else if (data.video.type === "external")
+        url = data.video.external?.url ?? null;
     }
 
     if (!url) return null;
@@ -67,10 +73,13 @@ async function resolveSignedUrlFromBlock(blockId: string): Promise<string | null
 function successHeaders(contentType: string) {
   return {
     "Content-Type": contentType,
-    // 하나의 진실원천: Cache-Control만 사용 + 에지용 s-maxage
+    // 더 긴 캐시 시간과 효율적인 stale-while-revalidate로 캐시 히트율 향상
     "Cache-Control":
-      "public, s-maxage=31536000, max-age=31536000, immutable, stale-while-revalidate=604800",
+      "public, s-maxage=31536000, max-age=31536000, immutable, stale-while-revalidate=2592000", // 30일 stale
+    // Accept 헤더만으로 Vary하여 캐시 효율성 극대화
     Vary: "Accept",
+    // 이미지 최적화 힌트
+    "Accept-CH": "DPR, Width, Viewport-Width",
   } as Record<string, string>;
 }
 
@@ -122,7 +131,8 @@ export async function GET(
       }
 
       const imageBuffer = await imageResponse.arrayBuffer();
-      const contentType = imageResponse.headers.get("content-type") || "image/jpeg";
+      const contentType =
+        imageResponse.headers.get("content-type") || "image/jpeg";
       return new NextResponse(imageBuffer, {
         headers: successHeaders(contentType),
       });
@@ -143,6 +153,9 @@ export async function GET(
     }
   } catch (error) {
     console.error("이미지 프록시 오류:", error);
-    return new NextResponse("서버 오류", { status: 500, headers: errorHeaders() });
+    return new NextResponse("서버 오류", {
+      status: 500,
+      headers: errorHeaders(),
+    });
   }
 }

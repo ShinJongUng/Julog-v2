@@ -3,7 +3,7 @@ import Image from "next/image"; // Next.js Image 컴포넌트 사용
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import CodeCopyButton from "./components/CodeCopyButton";
-import { getOptimizedImageUrl } from "./lib/image-utils";
+import { getOptimizedImageUrl, generateBlurDataURL } from "./lib/image-utils";
 import React from "react";
 
 // 각 페이지별 이미지 순서를 추적하기 위한 변수
@@ -165,16 +165,26 @@ export function getMDXComponents(
       const numHeight =
         typeof height === "string" ? parseInt(height, 10) : height;
 
-      // 기본값
+      // 기본값 - 더 작은 크기로 설정하여 로딩 속도 개선
       const validWidth =
-        typeof numWidth === "number" && numWidth > 0 ? numWidth : 600;
+        typeof numWidth === "number" && numWidth > 0
+          ? Math.min(numWidth, 800)
+          : 640;
       const validHeight =
-        typeof numHeight === "number" && numHeight > 0 ? numHeight : 338;
+        typeof numHeight === "number" && numHeight > 0
+          ? Math.min(numHeight, 600)
+          : 360;
 
       // 이미지 최적화 (프록시 API 사용으로 단순화됨)
       const optimizedSrc = getOptimizedImageUrl(src);
 
-      const caption = typeof title === "string" && title.trim().length > 0 ? title : undefined;
+      // 개선된 블러 플레이스홀더 생성
+      const blurDataURL = generateBlurDataURL(8, 6);
+
+      const caption =
+        typeof title === "string" && title.trim().length > 0
+          ? title
+          : undefined;
 
       return (
         <figure className="my-6 w-full flex flex-col items-center">
@@ -184,11 +194,12 @@ export function getMDXComponents(
             width={validWidth}
             height={validHeight}
             className="rounded-xl mx-auto max-w-full w-auto h-auto shadow-md"
-            placeholder="empty"
+            placeholder="blur"
+            blurDataURL={blurDataURL}
             priority={isFirstImage}
             loading={isFirstImage ? "eager" : "lazy"}
-            quality={50}
-            sizes="(min-width: 1024px) 736px, 92vw"
+            quality={40} // 더 낮은 화질로 압축률 향상
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 736px" // 더 최적화된 반응형 사이즈
             {...rest}
           />
           {caption && (
