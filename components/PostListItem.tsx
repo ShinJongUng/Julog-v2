@@ -3,56 +3,7 @@ import Link from "next/link";
 import { PostMeta } from "@/lib/posts";
 import { formatDate } from "@/lib/utils";
 
-// 원격 이미지 호스트 화이트리스트(Next 이미지 최적화 대상)
-const allowedHosts = new Set([
-  "avatars.githubusercontent.com",
-  "prod-files-secure.s3.us-west-2.amazonaws.com",
-  "secure.notion-static.com",
-]);
-const isAllowedRemote = (url: string) => {
-  try {
-    const u = new URL(url);
-    return (
-      (u.protocol === "https:" || u.protocol === "http:") &&
-      allowedHosts.has(u.hostname)
-    );
-  } catch {
-    return false;
-  }
-};
-
-// 히어로 이미지 전용 컴포넌트 (LCP 최적화)
-const HeroImage = ({
-  src,
-  alt,
-  className,
-}: {
-  src?: string;
-  alt: string;
-  className?: string;
-}) => {
-  if (!src) return null;
-  return (
-    <div
-      className={`relative aspect-[16/9] w-full overflow-hidden rounded-xl bg-muted/50 mb-8 ${className}`}
-    >
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        priority
-        placeholder="empty"
-        fetchPriority="high"
-        sizes="100vw"
-        quality={80}
-        className="object-cover"
-        unoptimized={!isAllowedRemote(src)}
-      />
-    </div>
-  );
-};
-
-// Skeleton 제거하여 클라이언트 JS 의존도 축소
+// 기존 이미지 처리 로직 제거 - 프록시 API 사용으로 단순화
 
 interface PostListItemProps {
   post: PostMeta;
@@ -62,8 +13,6 @@ interface PostListItemProps {
 const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
   // 첫 번째 포스트는 prefetch 활성화 (빠른 페이지 전환)
   const shouldPrefetch = index === 0;
-  const imageError = false;
-  const imagePath = `/${post.slug}/main.png`;
 
   // LCP 최적화: 첫 번째 3개의 포스트만 priority 적용
   const shouldPrioritize = index < 3;
@@ -118,30 +67,10 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
                 quality={70}
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 loading={shouldPrioritize ? "eager" : "lazy"}
-                unoptimized={!isAllowedRemote(post.image)}
               />
             ) : (
-              !imageError && (
-                <Image
-                  src={imagePath}
-                  alt={post.title}
-                  fill
-                  priority={shouldPrioritize}
-                  placeholder="empty"
-                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 144px, (max-width: 1024px) 168px, 144px"
-                  quality={75}
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  loading={shouldPrioritize ? "eager" : "lazy"}
-                />
-              )
-            )}
-
-            {/* 에러 상태일 때 기본 이미지 표시 */}
-            {false && (
-              <div className="absolute inset-0 flex items-center justify-center bg-muted/50 rounded-md">
-                <div className="text-xs text-muted-foreground">
-                  이미지를 불러올 수 없습니다
-                </div>
+              <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                <div className="text-xs text-muted-foreground">이미지 없음</div>
               </div>
             )}
           </div>
@@ -151,5 +80,4 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
   );
 };
 
-export { HeroImage };
 export default PostListItem;

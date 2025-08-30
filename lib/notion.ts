@@ -1,9 +1,14 @@
 import { Client } from "@notionhq/client";
 import { NotionToMarkdown } from "notion-to-md";
 import { PostMeta } from "./posts";
-import type { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
+import type {
+  BlockObjectResponse,
+  ImageBlockObjectResponse,
+  PageObjectResponse,
+} from "@notionhq/client/build/src/api-endpoints";
 import type { NotionPageProperties } from "./notion-types";
 import { cache } from "react";
+import { getProxyImageUrl, fileNameFromUrl } from "./image-utils";
 
 // Notion 클라이언트 초기화
 const notion = new Client({
@@ -11,6 +16,37 @@ const notion = new Client({
 });
 
 const n2m = new NotionToMarkdown({ notionClient: notion });
+// 이미지 블록을 block_id 기반 프록시 URL로 변환
+n2m.setCustomTransformer("image", async (block) => {
+  try {
+    const blockId: string = block.id;
+    const img = (block as ImageBlockObjectResponse).image;
+    if (!img) return "";
+    const type: string = img.type;
+
+    // 타입 가드를 사용하여 안전하게 속성 접근
+    let link: string | undefined;
+    if (type === "file" && "file" in img) {
+      link = img.file?.url;
+    } else if (type === "external" && "external" in img) {
+      link = img.external?.url;
+    }
+    const caption: string = (img.caption || [])
+      .map((c: { plain_text: string }) => c?.plain_text || "")
+      .join("")
+      .trim();
+    const fileName =
+      fileNameFromUrl(link) || (caption ? `${caption}.png` : "image");
+    const proxy = getProxyImageUrl(blockId, fileName);
+    const alt = caption || fileName || "image";
+    const title = caption ? ` \"${caption.replace(/\"/g, '\\"')}\"` : "";
+    // Markdown 이미지에 title을 넣어 MDX 컴포넌트에서 캡션으로 사용
+    return `![${alt}](${proxy}${title})`;
+  } catch (e) {
+    console.error("image transformer error", e);
+    return "";
+  }
+});
 
 // Notion 데이터베이스 ID (환경변수에서 가져옴)
 const DATABASE_ID = process.env.NOTION_DATABASE_ID || "";
@@ -21,7 +57,9 @@ type NotionPage = PageObjectResponse;
 /**
  * Notion 페이지 데이터를 PostMeta 형식으로 변환
  */
-function notionPageToPostMeta(page: NotionPage): PostMeta | null {
+async function notionPageToPostMeta(
+  page: NotionPage
+): Promise<PostMeta | null> {
   try {
     const properties = page.properties as unknown as NotionPageProperties;
 
@@ -54,12 +92,14 @@ function notionPageToPostMeta(page: NotionPage): PostMeta | null {
     // 태그
     const tags = properties.태그?.multi_select?.map((tag) => tag.name) || [];
 
-    // 이미지 URL 추출
+    // 썸네일 이미지 결정: 페이지의 첫 번째 이미지 블록을 우선 사용 (block_id 기반 프록시)
     let image: string | undefined;
-    const imageFiles = properties.이미지?.files;
-    if (imageFiles && imageFiles.length > 0) {
-      const firstImage = imageFiles[0];
-      image = firstImage.file?.url || firstImage.external?.url;
+    const firstImageBlock = await findFirstImageBlockId(page.id);
+    if (firstImageBlock) {
+      image = getProxyImageUrl(
+        firstImageBlock.blockId,
+        firstImageBlock.fileName
+      );
     }
 
     return {
@@ -102,10 +142,15 @@ const _getAllPostsMeta = async (): Promise<PostMeta[]> => {
       ],
     });
 
-    const posts = response.results
-      .filter((result): result is PageObjectResponse => "properties" in result)
-      .map((page) => notionPageToPostMeta(page))
-      .filter((post): post is PostMeta => post !== null);
+    const posts = (
+      await Promise.all(
+        response.results
+          .filter(
+            (result): result is PageObjectResponse => "properties" in result
+          )
+          .map((page) => notionPageToPostMeta(page))
+      )
+    ).filter((post): post is PostMeta => post !== null);
 
     return posts;
   } catch (error) {
@@ -179,7 +224,7 @@ const _getPostBySlug = async (slug: string) => {
 
       if (!("properties" in titleResponse.results[0])) return null;
       const page = titleResponse.results[0] as PageObjectResponse;
-      const meta = notionPageToPostMeta(page);
+      const meta = await notionPageToPostMeta(page);
 
       if (!meta) return null;
 
@@ -195,7 +240,7 @@ const _getPostBySlug = async (slug: string) => {
 
     if (!("properties" in response.results[0])) return null;
     const page = response.results[0] as PageObjectResponse;
-    const meta = notionPageToPostMeta(page);
+    const meta = await notionPageToPostMeta(page);
 
     if (!meta) return null;
 
@@ -241,6 +286,30 @@ const _getPostsByTag = async (tag: string): Promise<PostMeta[]> => {
 export const getPostsByTag = cache(async (tag: string) => {
   return await _getPostsByTag(tag);
 });
+
+// 첫 번째 이미지 블록을 찾는 유틸 (얕은 탐색)
+async function findFirstImageBlockId(
+  pageId: string
+): Promise<{ blockId: string; fileName?: string } | null> {
+  try {
+    const res = await notion.blocks.children.list({
+      block_id: pageId,
+      page_size: 100,
+    });
+    const results = (res.results || []) as BlockObjectResponse[];
+    for (const b of results) {
+      if (b.type === "image" && b.image) {
+        const link: string | undefined =
+          b.image.type === "file" ? b.image.file?.url : b.image.external?.url;
+        return { blockId: b.id, fileName: fileNameFromUrl(link) };
+      }
+    }
+    return null;
+  } catch (e) {
+    console.error("findFirstImageBlockId error", e);
+    return null;
+  }
+}
 
 // 캐시된 모든 태그 조회 함수
 const _getAllUniqueTags = async (): Promise<string[]> => {

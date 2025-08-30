@@ -42,15 +42,16 @@ export default function Giscus() {
       scriptElem.setAttribute("data-input-position", "bottom");
       scriptElem.setAttribute("data-theme", theme);
       scriptElem.setAttribute("data-lang", "ko");
-      scriptElem.setAttribute("data-loading", "lazy");
+      // lazy 로딩을 해제해 뷰포트 진입을 기다리지 않게 함
       ref.current.appendChild(scriptElem);
     };
 
-    // 초기 렌더가 끝난 후(메인 콘텐츠 그려진 뒤)에 로드
+    // 초기 렌더 직후, 브라우저가 여유 있을 때 빠르게 로드
     if ("requestIdleCallback" in window) {
-      window.requestIdleCallback(load, { timeout: 2000 });
+      // Lighthouse 영향을 줄이기 위해 짧은 타임아웃으로 idle에 스케줄
+      window.requestIdleCallback(load, { timeout: 500 });
     } else {
-      setTimeout(load, 1200);
+      setTimeout(load, 400);
     }
   }, [theme]);
 

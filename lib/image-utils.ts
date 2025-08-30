@@ -1,8 +1,19 @@
 /**
- * 이미지 URL을 그대로 반환합니다.
- * 기존의 프록시(/api/image-proxy) 사용을 제거하여 Next/Image가 직접 최적화하도록 변경.
+ * Notion image 프록시 URL 생성: block_id 기반으로 고정 경로 사용
+ * 형태: /api/image/[blockId]/[fileName]
+ */
+export function getProxyImageUrl(blockId: string, fileName?: string): string {
+  const safeName = sanitizeFileName(fileName || "image");
+  return `/api/image/${encodeURIComponent(blockId)}/${encodeURIComponent(
+    safeName
+  )}`;
+}
+
+/**
+ * 일반 이미지 URL 처리 (Notion이 아닌 경우)
  */
 export function getOptimizedImageUrl(src: string): string {
+  // MDX 변환에서 이미 /api/image/[blockId]/...로 변환됨. 기타 외부 이미지는 그대로 사용.
   return src;
 }
 
@@ -41,4 +52,32 @@ export function generateBlurDataURL(
   }
 
   return canvas.toDataURL();
+}
+
+// 내부 유틸
+function extractFileName(urlString: string): string | null {
+  try {
+    const url = new URL(urlString);
+    const last = url.pathname.split("/").filter(Boolean).pop();
+    if (!last) return null;
+    // URL 디코딩 및 너무 긴 토큰 방지
+    const name = decodeURIComponent(last);
+    // 쿼리 제거 (URL 객체 사용 중이라 일반적으로 없음)
+    return name || null;
+  } catch (e) {
+    console.error("이미지 URL 처리 실패:", e);
+    return null;
+  }
+}
+
+function sanitizeFileName(name: string): string {
+  // 공백/제어문자 제거 및 간단 정규화
+  return name.replace(/[\n\r\t]/g, " ").slice(0, 120);
+}
+
+export function fileNameFromUrl(
+  url: string | undefined | null
+): string | undefined {
+  if (!url) return undefined;
+  return extractFileName(url) || undefined;
 }

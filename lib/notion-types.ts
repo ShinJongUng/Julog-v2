@@ -29,16 +29,6 @@ export interface NotionMultiSelect {
   }>;
 }
 
-export interface NotionFiles {
-  files: Array<{
-    file?: {
-      url: string;
-    };
-    external?: {
-      url: string;
-    };
-  }>;
-}
 
 // Notion 페이지 속성 타입
 export interface NotionPageProperties {
@@ -49,5 +39,4 @@ export interface NotionPageProperties {
   작성자: NotionRichText;
   상태: NotionStatus;
   태그: NotionMultiSelect;
-  이미지: NotionFiles;
 }

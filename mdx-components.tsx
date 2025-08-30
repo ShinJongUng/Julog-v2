@@ -3,7 +3,7 @@ import Image from "next/image"; // Next.js Image 컴포넌트 사용
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import CodeCopyButton from "./components/CodeCopyButton";
-import { getOptimizedImageUrl, generateBlurDataURL } from "./lib/image-utils";
+import { getOptimizedImageUrl } from "./lib/image-utils";
 import React from "react";
 
 // 각 페이지별 이미지 순서를 추적하기 위한 변수
@@ -153,7 +153,7 @@ export function getMDXComponents(
         </code>
       );
     },
-    img: ({ src, alt, width, height, ...rest }) => {
+    img: ({ src, alt, width, height, title, ...rest }) => {
       if (!src) return null;
 
       // 이미지 순서 증가 및 LCP 최적화
@@ -165,38 +165,38 @@ export function getMDXComponents(
       const numHeight =
         typeof height === "string" ? parseInt(height, 10) : height;
 
-      // 기본값: 실제 본문 폭에 맞춰 더 보수적 설정
+      // 기본값
       const validWidth =
         typeof numWidth === "number" && numWidth > 0 ? numWidth : 600;
       const validHeight =
         typeof numHeight === "number" && numHeight > 0 ? numHeight : 338;
 
-      // Notion 이미지 최적화
+      // 이미지 최적화 (프록시 API 사용으로 단순화됨)
       const optimizedSrc = getOptimizedImageUrl(src);
 
-      // LCP 최적화: 본문 첫 이미지는 LCP 후보
-      const shouldPrioritize = isFirstImage;
-      const shouldLazyLoad = !isFirstImage;
-      const fetchPriority = isFirstImage ? "high" : "auto";
+      const caption = typeof title === "string" && title.trim().length > 0 ? title : undefined;
 
       return (
-        <span className="my-6 w-full flex justify-center">
+        <figure className="my-6 w-full flex flex-col items-center">
           <Image
             src={optimizedSrc}
             alt={alt || "이미지"}
             width={validWidth}
             height={validHeight}
             className="rounded-xl mx-auto max-w-full w-auto h-auto shadow-md"
-            placeholder={isFirstImage ? "empty" : "blur"}
-            {...(!isFirstImage && { blurDataURL: generateBlurDataURL(8, 6) })}
-            priority={shouldPrioritize}
-            loading={shouldLazyLoad ? "lazy" : "eager"}
-            quality={isFirstImage ? 70 : 65}
+            placeholder="empty"
+            priority={isFirstImage}
+            loading={isFirstImage ? "eager" : "lazy"}
+            quality={70}
             sizes="(max-width: 420px) 100vw, (max-width: 768px) 95vw, (max-width: 1200px) 85vw, 600px"
-            fetchPriority={fetchPriority}
             {...rest}
           />
-        </span>
+          {caption && (
+            <figcaption className="mt-2 text-sm text-muted-foreground text-center">
+              {caption}
+            </figcaption>
+          )}
+        </figure>
       );
     },
 
