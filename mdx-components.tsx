@@ -21,11 +21,44 @@ export function getMDXComponents(
   const hasHero = Boolean(opts?.hasHero);
   return {
     a: ({ href, children, ...props }) => {
-      const isExternal = typeof href === "string" && /^https?:\/\//.test(href);
+      const hrefStr = typeof href === "string" ? href : "";
+      const isExternal = /^https?:\/\//.test(hrefStr);
+
+      // Helper: get plain text from children
+      const getText = (node: React.ReactNode): string => {
+        if (typeof node === "string") return node;
+        if (Array.isArray(node)) return node.map(getText).join("");
+        return "";
+      };
+      const childText = getText(children).trim();
+      // YouTube embed for any YouTube link (regardless of anchor text)
+      const ytMatch = hrefStr.match(
+        /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/
+      );
+      if (ytMatch) {
+        const videoId = ytMatch[1];
+        const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        return (
+          <div className="my-6 w-full max-w-full not-prose">
+            <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
+              <iframe
+                src={embedUrl}
+                className="absolute inset-0 h-full w-full rounded-xl"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                title="YouTube video"
+              />
+            </div>
+          </div>
+        );
+      }
+
+      // Default anchor with safe wrapping so long URLs don’t overflow
       return (
         <a
           href={href}
-          className="text-green-700 underline hover:text-green-800  visited:text-green-700 transition-colors dark:text-green-300 dark:hover:text-green-200"
+          className="text-green-700 underline hover:text-green-800 visited:text-green-700 transition-colors dark:text-green-300 dark:hover:text-green-200 break-words max-w-full"
+          style={{ overflowWrap: "anywhere", wordBreak: "break-word" }}
           {...(isExternal
             ? { target: "_blank", rel: "noopener noreferrer" }
             : {})}
