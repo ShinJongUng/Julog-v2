@@ -184,11 +184,8 @@ const nextConfig = {
     deviceSizes: [320, 360, 414, 640, 750, 828],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 320],
     // 더 긴 캐시 시간으로 재요청 감소
-    minimumCacheTTL: 86400, // 24시간 (기존 10분에서 대폭 증가)
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    // 이미지 품질 최적화 (기본 75에서 40으로 더 낮춤 - WebP/AVIF의 효율성으로 시각적 품질 유지)
-    quality: 40,
     // 이미지 압축 최적화 - 더 aggressive한 압축으로 파일 크기 감소
     unoptimized: false, // Next.js 최적화 활성화
   },
