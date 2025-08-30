@@ -3,7 +3,7 @@ import Image from "next/image"; // Next.js Image 컴포넌트 사용
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import CodeCopyButton from "./components/CodeCopyButton";
-import { getOptimizedImageUrl, generateBlurDataURL } from "./lib/image-utils";
+import { getOptimizedImageUrl } from "./lib/image-utils";
 import React from "react";
 
 // 각 페이지별 이미지 순서를 추적하기 위한 변수
@@ -176,12 +176,6 @@ export function getMDXComponents(
       // 이미지 최적화 - API 라우트를 Next.js Image 최적화와 함께 사용
       const optimizedSrc = getOptimizedImageUrl(src);
 
-      // 정확한 비율의 블러 플레이스홀더 생성
-      const aspectRatio = validHeight / validWidth;
-      const blurWidth = 16;
-      const blurHeight = Math.round(blurWidth * aspectRatio);
-      const blurDataURL = generateBlurDataURL(blurWidth, blurHeight);
-
       const caption =
         typeof title === "string" && title.trim().length > 0
           ? title
@@ -202,11 +196,9 @@ export function getMDXComponents(
               width={validWidth}
               height={validHeight}
               className="rounded-xl object-contain"
-              placeholder="blur"
-              blurDataURL={blurDataURL}
               priority={isFirstImage}
               loading={isFirstImage ? "eager" : "lazy"}
-              quality={50} // 화질 향상으로 더 선명한 이미지
+              quality={50}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 800px"
               style={{
                 width: "100%",
