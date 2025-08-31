@@ -44,9 +44,7 @@
 }
 
 :root {
-  /* Global font variables: titles use NanumSquare, body uses NanumSquareRound */
-  --font-sans: "NanumSquareRound", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
-  --font-title: "NanumSquare", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  /* Font variables are provided by next/font via --font-sans / --font-title */
   --radius: 0.625rem;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
@@ -123,6 +121,6 @@
     @apply bg-background text-foreground;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-title);
+    font-family: var(--font-title), system-ui, sans-serif;
   }
 }

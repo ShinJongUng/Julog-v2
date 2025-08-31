@@ -50,7 +50,7 @@ export default function AboutPage() {
         프로덕트 엔지니어 <strong>신종웅</strong>입니다.
       </h1>
 
-      <blockquote className="bg-gray-50 rounded-xl p-4 sm:p-6 border-l-8 text-sm sm:text-base leading-relaxed">
+      <blockquote className="bg-gray-50 dark:bg-gray-900 dark:text-gray-300 border-gray-300 dark:border-gray-700 rounded-xl p-4 sm:p-6 border-l-8 text-sm sm:text-base leading-relaxed">
         <p>
           안녕하세요! JULOG의 주인장 <strong>신종웅</strong>입니다.
           <br />

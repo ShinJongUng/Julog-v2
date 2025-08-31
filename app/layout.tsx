@@ -5,6 +5,30 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import localFont from "next/font/local";
+
+// Self-hosted fonts to avoid render-blocking CSS from CDNs
+const nanumSquare = localFont({
+  src: [
+    { path: "./fonts/NanumSquareL.woff2", weight: "300", style: "normal" },
+    { path: "./fonts/NanumSquareR.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/NanumSquareB.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/NanumSquareEB.woff2", weight: "800", style: "normal" },
+  ],
+  variable: "--font-title",
+  display: "swap",
+});
+
+const nanumSquareRound = localFont({
+  src: [
+    { path: "./fonts/NanumSquareRoundL.woff2", weight: "300", style: "normal" },
+    { path: "./fonts/NanumSquareRoundR.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/NanumSquareRoundB.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/NanumSquareRoundEB.woff2", weight: "800", style: "normal" },
+  ],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://blog.jongung.com"),
@@ -39,22 +63,9 @@ export default function RootLayout({
             __html: `/* Critical CSS - minimal */
 *{box-sizing:border-box}
 html{line-height:1.5;-webkit-text-size-adjust:100%}
-/* Define font vars early to prevent FOIT/FOUT */
-:root{--font-sans:"NanumSquareRound","Apple SD Gothic Neo","Noto Sans KR","Apple Color Emoji","Segoe UI Emoji",system-ui,sans-serif;--font-title:"NanumSquare","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif}
 body{margin:0;font-family:var(--font-sans),system-ui,sans-serif;line-height:inherit;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 `,
           }}
-        />
-        {/* Webfont CSS (CDN) */}
-        {/* NanumSquare (titles) */}
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/nanumsquare.css"
-        />
-        {/* NanumSquare Round (body) */}
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/@kfonts/nanum-square-round@latest/index.css"
         />
         {/* Preconnects for third-party origins used early */}
         <link
@@ -98,6 +109,8 @@ body{margin:0;font-family:var(--font-sans),system-ui,sans-serif;line-height:inhe
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
+          nanumSquare.variable,
+          nanumSquareRound.variable,
         )}
       >
         <Analytics />

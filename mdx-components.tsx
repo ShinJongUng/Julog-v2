@@ -40,7 +40,10 @@ export function getMDXComponents(
         const embedUrl = `https://www.youtube.com/embed/${videoId}`;
         return (
           <span className="my-6 block w-full max-w-full not-prose">
-            <span className="relative block w-full" style={{ paddingTop: "56.25%" }}>
+            <span
+              className="relative block w-full"
+              style={{ paddingTop: "56.25%" }}
+            >
               <iframe
                 src={embedUrl}
                 className="absolute inset-0 h-full w-full rounded-xl"
@@ -198,13 +201,12 @@ export function getMDXComponents(
       const numHeight =
         typeof height === "string" ? parseInt(height, 10) : height;
 
-      // 레이아웃 시프트 방지를 위해 더 적절한 기본값 설정
+      // 레이아웃 시프트 방지를 위해 기본 값은 제공하되,
+      // 고정 비율은 강제하지 않도록 wrapper 에서는 비율을 지정하지 않음
       const validWidth =
         typeof numWidth === "number" && numWidth > 0 ? numWidth : 800;
       const validHeight =
-        typeof numHeight === "number" && numHeight > 0
-          ? numHeight
-          : Math.round(validWidth * 0.6); // 16:10 비율로 기본값 설정
+        typeof numHeight === "number" && numHeight > 0 ? numHeight : 600;
 
       // 이미지 최적화 - API 라우트를 Next.js Image 최적화와 함께 사용
       const optimizedSrc = getOptimizedImageUrl(src);
@@ -219,8 +221,8 @@ export function getMDXComponents(
           <span
             className="relative block w-full max-w-full"
             style={{
-              aspectRatio: `${validWidth}/${validHeight}`,
-              maxWidth: `${validWidth}px`,
+              // 고정 비율을 제거하고, 필요 시 MDX width를 최대 너비로만 존중
+              maxWidth: typeof numWidth === "number" && numWidth > 0 ? `${numWidth}px` : undefined,
             }}
           >
             <Image
@@ -228,15 +230,14 @@ export function getMDXComponents(
               alt={alt || "이미지"}
               width={validWidth}
               height={validHeight}
-              className="rounded-xl object-contain"
               priority={isFirstImage}
               loading={isFirstImage ? "eager" : "lazy"}
               quality={50}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 800px"
+              sizes={`(min-width: 1024px) ${validWidth}px, 100vw`}
               style={{
                 width: "100%",
-                height: "100%",
-                objectFit: "contain",
+                height: "auto",
+                borderRadius: "0.5rem",
               }}
               {...rest}
             />
