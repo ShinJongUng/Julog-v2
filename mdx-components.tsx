@@ -5,6 +5,7 @@ import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import CodeCopyButton from "./components/CodeCopyButton";
 import { getOptimizedImageUrl } from "./lib/image-utils";
 import React from "react";
+import YouTubeEmbedLazy from "./components/lazy/YouTubeEmbedLazy";
 
 // 각 페이지별 이미지 순서를 추적하기 위한 변수
 let imageIndex = 0;
@@ -37,23 +38,8 @@ export function getMDXComponents(
       );
       if (ytMatch) {
         const videoId = ytMatch[1];
-        const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-        return (
-          <span className="my-6 block w-full max-w-full not-prose">
-            <span
-              className="relative block w-full"
-              style={{ paddingTop: "56.25%" }}
-            >
-              <iframe
-                src={embedUrl}
-                className="absolute inset-0 h-full w-full rounded-xl"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                title="YouTube video"
-              />
-            </span>
-          </span>
-        );
+        // 초기엔 썸네일/버튼만, 가시영역 진입 시 iframe 로드
+        return <YouTubeEmbedLazy videoId={videoId} title={childText || undefined} loadOn="view" />;
       }
 
       // Default anchor with safe wrapping so long URLs don’t overflow
