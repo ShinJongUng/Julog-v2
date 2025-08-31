@@ -62,6 +62,7 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, index = 0 }) => {
                 alt={post.title}
                 fill
                 priority={shouldPrioritize}
+                fetchPriority={shouldPrioritize ? "high" : undefined}
                 placeholder="empty"
                 sizes="(max-width: 640px) 100vw, 128px"
                 quality={55}

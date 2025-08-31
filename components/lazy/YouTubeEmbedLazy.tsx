@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React from "react";
 
 type Props = {
@@ -73,14 +74,17 @@ export default function YouTubeEmbedLazy({
       >
         {/* 썸네일: 활성화 전 또는 iframe 로딩 중에 표시 */}
         {showThumbnail && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={getThumbUrl(videoId)}
             alt={title || "YouTube thumbnail"}
+            fill
             loading="lazy"
-            decoding="async"
-            className="absolute inset-0 h-full w-full object-cover"
-            style={{ opacity: activated && loaded ? 0 : 1, transition: "opacity .3s ease" }}
+            sizes="(min-width: 1024px) 736px, 100vw"
+            className="absolute inset-0 object-cover"
+            style={{
+              opacity: activated && loaded ? 0 : 1,
+              transition: "opacity .3s ease",
+            }}
           />
         )}
 

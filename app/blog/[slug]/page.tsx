@@ -15,6 +15,7 @@ import TableOfContentsSection from "@/components/lazy/TableOfContentsSection";
 import CommentsSection from "@/components/lazy/CommentsSection";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
+import rehypePrettyCode from "rehype-pretty-code";
 
 interface PostPageProps {
   params: Promise<{
@@ -148,7 +149,17 @@ export default async function PostPage({ params }: PostPageProps) {
             options={{
               mdxOptions: {
                 remarkPlugins: [remarkGfm],
-                rehypePlugins: [rehypeSlug],
+                rehypePlugins: [
+                  rehypeSlug,
+                  [
+                    rehypePrettyCode,
+                    {
+                      // 라이트/다크 모두 정적 하이라이트 생성 (SEO & 정적 사이트 호환)
+                      theme: { light: "github-light", dark: "github-dark" },
+                      keepBackground: false,
+                    },
+                  ],
+                ],
               },
             }}
           />

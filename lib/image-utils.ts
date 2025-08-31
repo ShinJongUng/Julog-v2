@@ -16,7 +16,7 @@ export function getProxyImageUrl(blockId: string, fileName?: string): string {
 export function getOptimizedImageUrl(src: string): string {
   // Notion API 이미지인 경우 (_next/image를 통해 최적화)
   if (src.startsWith("/api/image/")) {
-    // Next.js Image 컴포넌트가 자동으로 /_next/image 경로를 통해 최적화함
+    // Next/Image가 품질/포맷 최적화를 담당하도록 쿼리 파라미터를 추가하지 않습니다.
     return src;
   }
 

@@ -1,8 +1,9 @@
 import type { MDXComponents } from "mdx/types";
 import Image from "next/image"; // Next.js Image 컴포넌트 사용
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
-import CodeCopyButton from "./components/CodeCopyButton";
+// 코드 블록은 빌드 시 정적으로 하이라이트되도록 처리합니다 (rehype-pretty-code 사용).
+// 따라서 Lazy 컴포넌트는 제거하고, 인라인 코드는 간단 스타일만 적용합니다.
+// Copy 버튼은 필요 시 별도 pre 래퍼에서 확장 가능합니다.
+// import CodeCopyButton from "./components/CodeCopyButton";
 import { getOptimizedImageUrl } from "./lib/image-utils";
 import React from "react";
 import YouTubeEmbedLazy from "./components/lazy/YouTubeEmbedLazy";
@@ -32,15 +33,6 @@ export function getMDXComponents(
         return "";
       };
       const childText = getText(children).trim();
-      // YouTube embed for any YouTube link (regardless of anchor text)
-      const ytMatch = hrefStr.match(
-        /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/
-      );
-      if (ytMatch) {
-        const videoId = ytMatch[1];
-        // 초기엔 썸네일/버튼만, 가시영역 진입 시 iframe 로드
-        return <YouTubeEmbedLazy videoId={videoId} title={childText || undefined} loadOn="view" />;
-      }
 
       // Default anchor with safe wrapping so long URLs don’t overflow
       return (
@@ -96,9 +88,34 @@ export function getMDXComponents(
         {children}
       </h3>
     ),
-    p: ({ children }) => (
-      <p style={{ lineHeight: 1.7, marginBottom: "1rem" }}>{children}</p>
-    ),
+    p: ({ children }) => {
+      // 단일 링크가 유튜브 URL인 문단은 블록 임베드로 치환하여 p > div 중첩 문제 방지
+      const ytRegex = /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/;
+
+      const getText = (node: React.ReactNode): string => {
+        if (typeof node === "string") return node;
+        if (Array.isArray(node)) return node.map(getText).join("");
+        return "";
+      };
+
+      const kids = Array.isArray(children) ? children.filter(Boolean) : [children];
+      if (kids.length === 1 && React.isValidElement(kids[0])) {
+        const el: any = kids[0];
+        const hrefStr: string | undefined = el.props?.href;
+        if (hrefStr) {
+          const m = hrefStr.match(ytRegex);
+          if (m) {
+            const videoId = m[1];
+            const title = getText(el.props?.children) || undefined;
+            return (
+              <YouTubeEmbedLazy videoId={videoId} title={title} loadOn="view" />
+            );
+          }
+        }
+      }
+
+      return <p style={{ lineHeight: 1.7, marginBottom: "1rem" }}>{children}</p>;
+    },
     ul: ({ children }) => (
       <ul
         style={{
@@ -145,27 +162,17 @@ export function getMDXComponents(
       </strong>
     ),
     code: ({ className, children, ...props }) => {
-      const match = /language-(\w+)/.exec(className || "");
-      const code = String(children).replace(/\n$/, "");
-
-      if (match) {
-        const language = match[1];
+      // language- 가 붙은 경우는 rehype-pretty-code 가 생성한 블록 코드이므로
+      // 기본 렌더링을 유지하여 정적 하이라이트 결과를 그대로 사용합니다.
+      if (className && /language-\w+/.test(className)) {
         return (
-          <div className="my-6 rounded-md overflow-hidden relative">
-            <CodeCopyButton code={code} />
-            <SyntaxHighlighter
-              language={language}
-              style={tomorrow}
-              customStyle={{ margin: 0, borderRadius: "0.375rem" }}
-              showLineNumbers
-              wrapLongLines
-            >
-              {code}
-            </SyntaxHighlighter>
-          </div>
+          <code className={className} {...props}>
+            {children}
+          </code>
         );
       }
 
+      // 인라인 코드에만 최소한의 스타일 제공
       return (
         <code
           className="rounded px-1.5 py-0.5 font-mono text-sm bg-green-100 dark:bg-green-900/40"
@@ -189,8 +196,13 @@ export function getMDXComponents(
 
       // 레이아웃 시프트 방지를 위해 기본 값은 제공하되,
       // 고정 비율은 강제하지 않도록 wrapper 에서는 비율을 지정하지 않음
+      // 레이아웃의 실제 본문 최대 폭 계산에 맞춤 (Layout: max-w-5xl=1024px, px-4=32px padding,
+      // 페이지 grid: lg:grid-cols-4, lg:gap-8=32px, 본문은 lg:col-span-3)
+      // 트랙 폭 T = (컨테이너 1024-패딩32 - 3*갭32)/4 = (992 - 96)/4 = 224
+      // 본문 폭 = 3*T + 2*갭 = 3*224 + 64 = 736px
+      const ARTICLE_MAX_W = 736;
       const validWidth =
-        typeof numWidth === "number" && numWidth > 0 ? numWidth : 800;
+        typeof numWidth === "number" && numWidth > 0 ? numWidth : ARTICLE_MAX_W;
       const validHeight =
         typeof numHeight === "number" && numHeight > 0 ? numHeight : 600;
 
@@ -208,7 +220,10 @@ export function getMDXComponents(
             className="relative block w-full max-w-full"
             style={{
               // 고정 비율을 제거하고, 필요 시 MDX width를 최대 너비로만 존중
-              maxWidth: typeof numWidth === "number" && numWidth > 0 ? `${numWidth}px` : undefined,
+              maxWidth:
+                typeof numWidth === "number" && numWidth > 0
+                  ? `${numWidth}px`
+                  : undefined,
             }}
           >
             <Image
@@ -217,9 +232,10 @@ export function getMDXComponents(
               width={validWidth}
               height={validHeight}
               priority={isFirstImage}
+              fetchPriority={isFirstImage ? "high" : undefined}
               loading={isFirstImage ? "eager" : "lazy"}
-              quality={50}
-              sizes={`(min-width: 1024px) ${validWidth}px, 100vw`}
+              quality={75}
+              sizes={`(min-width: 1024px) ${ARTICLE_MAX_W}px, calc(100vw - 32px)`}
               style={{
                 width: "100%",
                 height: "auto",

@@ -177,9 +177,13 @@ const nextConfig = {
         protocol: "https",
         hostname: "secure.notion-static.com",
       },
+      {
+        protocol: "https",
+        hostname: "i.ytimg.com",
+      },
     ],
-    // AVIF 우선순위로 더 나은 압축률 제공 (WebP보다 20-50% 더 효율적)
-    formats: ["image/avif", "image/webp"],
+    // LCP 디코딩 지연 최소화를 위해 WebP만 사용
+    formats: ["image/webp"],
     // 모바일 우선순위로 불필요한 해상도 제거 및 더 작은 기본 크기
     deviceSizes: [320, 360, 414, 640, 750, 828],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 320],

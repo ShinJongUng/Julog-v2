@@ -4,7 +4,7 @@ import Layout from "@/components/Layout";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/next";
+import AnalyticsLazy from "@/components/lazy/AnalyticsLazy";
 import localFont from "next/font/local";
 
 // Self-hosted fonts to avoid render-blocking CSS from CDNs
@@ -113,7 +113,8 @@ body{margin:0;font-family:var(--font-sans),system-ui,sans-serif;line-height:inhe
           nanumSquareRound.variable,
         )}
       >
-        <Analytics />
+        {/* Web Analytics는 Lazy 로딩, Speed Insights는 기존 유지 */}
+        <AnalyticsLazy />
         <SpeedInsights />
         <ThemeProvider
           attribute="class"
