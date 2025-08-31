@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-// Edge에서 실행해 에지 캐시를 극대화
-export const runtime = "edge";
+// 이미지 변환을 위해 Node 런타임 사용 (sharp 사용 가능)
+export const runtime = "nodejs";
 
 // 메모리 캐시 (서버 재시작 시까지 유지). key = blockId
 const urlCache = new Map<string, { url: string; expiry: number }>();
@@ -91,7 +91,7 @@ function errorHeaders() {
 }
 
 export async function GET(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ blockId: string; fileName?: string }> }
 ) {
   try {
@@ -130,12 +130,78 @@ export async function GET(
         });
       }
 
-      const imageBuffer = await imageResponse.arrayBuffer();
-      const contentType =
+      const originalArrayBuffer = await imageResponse.arrayBuffer();
+      const originalBuffer = Buffer.from(originalArrayBuffer);
+      const originalContentType =
         imageResponse.headers.get("content-type") || "image/jpeg";
-      return new NextResponse(imageBuffer, {
-        headers: successHeaders(contentType),
-      });
+
+      // 브라우저의 Accept 헤더 기반으로 최적 포맷 결정
+      const accept = request.headers.get("accept") || "";
+      const prefersAvif = /image\/avif/i.test(accept);
+      const prefersWebp = /image\/webp/i.test(accept);
+
+      // 선택적 리사이즈/품질 파라미터 (직접 접근 시 활용 가능)
+      const url = new URL(request.url);
+      const wParam = url.searchParams.get("w");
+      const qParam = url.searchParams.get("q");
+      const width = wParam
+        ? Math.max(1, Math.min(3840, parseInt(wParam, 10)))
+        : undefined;
+      const quality = qParam
+        ? Math.max(30, Math.min(95, parseInt(qParam, 10)))
+        : 75;
+
+      // GIF(특히 애니메이션) 등은 원본 그대로 전달
+      if (/image\/gif/i.test(originalContentType)) {
+        return new NextResponse(originalBuffer, {
+          headers: successHeaders(originalContentType),
+        });
+      }
+
+      try {
+        const sharpMod = await import("sharp");
+        const sharp = sharpMod.default(originalBuffer, { failOnError: false });
+
+        if (width) sharp.resize({ width, withoutEnlargement: true });
+
+        let outBuffer: Buffer;
+        let outType: string = originalContentType;
+
+        if (prefersAvif) {
+          outBuffer = await sharp.avif({ quality, effort: 4 }).toBuffer();
+          outType = "image/avif";
+        } else if (prefersWebp) {
+          outBuffer = await sharp.webp({ quality }).toBuffer();
+          outType = "image/webp";
+        } else {
+          // 포맷 선호가 없으면 원본 유지하면서 품질/리사이즈만 적용
+          if (/image\/png/i.test(originalContentType)) {
+            outBuffer = await sharp.png({ quality }).toBuffer();
+            outType = "image/png";
+          } else {
+            outBuffer = await sharp.jpeg({ quality, mozjpeg: true }).toBuffer();
+            outType = "image/jpeg";
+          }
+        }
+
+        const outArrayBuffer = outBuffer.buffer.slice(
+          outBuffer.byteOffset,
+          outBuffer.byteOffset + outBuffer.byteLength
+        );
+        return new NextResponse(outArrayBuffer as ArrayBuffer, {
+          headers: successHeaders(outType),
+        });
+      } catch (e) {
+        // sharp 변환 실패 시 원본 전달 (안전망)
+        console.warn("이미지 변환 실패, 원본 전달:", e);
+        const origArrayBuffer = originalBuffer.buffer.slice(
+          originalBuffer.byteOffset,
+          originalBuffer.byteOffset + originalBuffer.byteLength
+        );
+        return new NextResponse(origArrayBuffer, {
+          headers: successHeaders(originalContentType),
+        });
+      }
     } catch (fetchError) {
       clearTimeout(timeoutId);
       if (fetchError instanceof Error && fetchError.name === "AbortError") {
