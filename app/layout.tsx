@@ -24,7 +24,11 @@ const nanumSquareRound = localFont({
     { path: "./fonts/NanumSquareRoundL.woff2", weight: "300", style: "normal" },
     { path: "./fonts/NanumSquareRoundR.woff2", weight: "400", style: "normal" },
     { path: "./fonts/NanumSquareRoundB.woff2", weight: "700", style: "normal" },
-    { path: "./fonts/NanumSquareRoundEB.woff2", weight: "800", style: "normal" },
+    {
+      path: "./fonts/NanumSquareRoundEB.woff2",
+      weight: "800",
+      style: "normal",
+    },
   ],
   variable: "--font-sans",
   display: "swap",
@@ -105,12 +109,17 @@ body{margin:0;font-family:var(--font-sans),system-ui,sans-serif;line-height:inhe
           name="google-site-verification"
           content="b0kt3EponSzvvcSyhrDBcH18r-6z5_V2j6RYmHwGCu4"
         />
+        {/* Naver Search Advisor */}
+        <meta
+          name="naver-site-verification"
+          content="e8c1b1eec11892d4c47bfe48b7bd5d04afe84c68"
+        />
       </head>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
           nanumSquare.variable,
-          nanumSquareRound.variable,
+          nanumSquareRound.variable
         )}
       >
         {/* Web Analytics는 Lazy 로딩, Speed Insights는 기존 유지 */}
