@@ -5,6 +5,8 @@ const nextConfig = {
   pageExtensions: ["ts", "tsx", "js", "jsx"], // MDX 확장자 제거
   reactStrictMode: true,
 
+  transpilePackages: ["next-mdx-remote"],
+
   // 모던 브라우저 타겟팅으로 번들 크기 최적화
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",

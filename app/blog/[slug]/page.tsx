@@ -15,7 +15,7 @@ import TableOfContentsSection from "@/components/lazy/TableOfContentsSection";
 import CommentsSection from "@/components/lazy/CommentsSection";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
-import rehypePrettyCode from "rehype-pretty-code";
+import rehypePrettyCode, { Options } from "rehype-pretty-code";
 
 interface PostPageProps {
   params: Promise<{
@@ -25,6 +25,10 @@ interface PostPageProps {
 
 // ISR 설정 - 5분마다 재생성 (더 빠른 콘텐츠 업데이트와 LCP 최적화)
 export const revalidate = 300;
+
+const rehypePrettyCodeOptions: Options = {
+  theme: "one-dark-pro",
+};
 
 export async function generateStaticParams() {
   try {
@@ -130,8 +134,7 @@ export default async function PostPage({ params }: PostPageProps) {
                   <Link
                     key={tag}
                     href={`/tag/${encodeURIComponent(tag.toLowerCase())}`}
-                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted hover:text-green-600 dark:hover:text-green-400 transition-colors"
-                  >
+                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted hover:text-green-600 dark:hover:text-green-400 transition-colors">
                     {tag}
                   </Link>
                 ))}
@@ -151,14 +154,7 @@ export default async function PostPage({ params }: PostPageProps) {
                 remarkPlugins: [remarkGfm],
                 rehypePlugins: [
                   rehypeSlug,
-                  [
-                    rehypePrettyCode,
-                    {
-                      // 라이트/다크 모두 정적 하이라이트 생성 (SEO & 정적 사이트 호환)
-                      theme: { light: "github-light", dark: "github-dark" },
-                      keepBackground: false,
-                    },
-                  ],
+                  [rehypePrettyCode, rehypePrettyCodeOptions],
                 ],
               },
             }}

@@ -7,6 +7,8 @@ import Image from "next/image"; // Next.js Image 컴포넌트 사용
 import { getOptimizedImageUrl } from "./lib/image-utils";
 import React from "react";
 import YouTubeEmbedLazy from "./components/lazy/YouTubeEmbedLazy";
+import PreWithCopy from "./components/PreWithCopy";
+import { cn } from "./lib/utils";
 
 // 각 페이지별 이미지 순서를 추적하기 위한 변수
 let imageIndex = 0;
@@ -22,6 +24,7 @@ export function getMDXComponents(
 ): MDXComponents {
   const hasHero = Boolean(opts?.hasHero);
   return {
+    pre: (props: any) => <PreWithCopy {...props} />,
     a: ({ href, children, ...props }) => {
       const hrefStr = typeof href === "string" ? href : "";
       const isExternal = /^https?:\/\//.test(hrefStr);
@@ -43,8 +46,7 @@ export function getMDXComponents(
           {...(isExternal
             ? { target: "_blank", rel: "noopener noreferrer" }
             : {})}
-          {...props}
-        >
+          {...props}>
           {children}
         </a>
       );
@@ -57,8 +59,7 @@ export function getMDXComponents(
           fontWeight: "bold",
           marginTop: "1.5rem",
           marginBottom: "1rem",
-        }}
-      >
+        }}>
         {children}
       </h1>
     ),
@@ -70,8 +71,7 @@ export function getMDXComponents(
           fontWeight: "bold",
           marginTop: "1.5rem",
           marginBottom: "1rem",
-        }}
-      >
+        }}>
         {children}
       </h2>
     ),
@@ -83,14 +83,14 @@ export function getMDXComponents(
           fontWeight: "bold",
           marginTop: "1.5rem",
           marginBottom: "1rem",
-        }}
-      >
+        }}>
         {children}
       </h3>
     ),
     p: ({ children }) => {
       // 단일 링크가 유튜브 URL인 문단은 블록 임베드로 치환하여 p > div 중첩 문제 방지
-      const ytRegex = /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/;
+      const ytRegex =
+        /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/;
 
       const getText = (node: React.ReactNode): string => {
         if (typeof node === "string") return node;
@@ -98,7 +98,9 @@ export function getMDXComponents(
         return "";
       };
 
-      const kids = Array.isArray(children) ? children.filter(Boolean) : [children];
+      const kids = Array.isArray(children)
+        ? children.filter(Boolean)
+        : [children];
       if (kids.length === 1 && React.isValidElement(kids[0])) {
         const el: any = kids[0];
         const hrefStr: string | undefined = el.props?.href;
@@ -114,7 +116,9 @@ export function getMDXComponents(
         }
       }
 
-      return <p style={{ lineHeight: 1.7, marginBottom: "1rem" }}>{children}</p>;
+      return (
+        <p style={{ lineHeight: 1.7, marginBottom: "1rem" }}>{children}</p>
+      );
     },
     ul: ({ children }) => (
       <ul
@@ -122,8 +126,7 @@ export function getMDXComponents(
           listStyle: "disc",
           marginLeft: "1.5rem",
           marginBottom: "1rem",
-        }}
-      >
+        }}>
         {children}
       </ul>
     ),
@@ -133,8 +136,7 @@ export function getMDXComponents(
           listStyle: "decimal",
           marginLeft: "1.5rem",
           marginBottom: "1rem",
-        }}
-      >
+        }}>
         {children}
       </ol>
     ),
@@ -151,35 +153,34 @@ export function getMDXComponents(
           fontStyle: "italic",
           color: "#666",
           margin: "1.5rem 0",
-        }}
-      >
+        }}>
         {children}
       </blockquote>
     ),
-    strong: ({ children }) => (
-      <strong className="font-bold px-1 py-0.5 bg-green-50 dark:bg-green-900/40 rounded">
-        {children}
-      </strong>
-    ),
-    code: ({ className, children, ...props }) => {
-      // language- 가 붙은 경우는 rehype-pretty-code 가 생성한 블록 코드이므로
-      // 기본 렌더링을 유지하여 정적 하이라이트 결과를 그대로 사용합니다.
-      if (className && /language-\w+/.test(className)) {
+    strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+    code: ({ className, children, ...props }: any) => {
+      // rehype-pretty-code가 생성한 블록 코드는 data-language 속성이나 language- 클래스를 가지고 있음
+      const isCodeBlock =
+        (className && /language-\w+/.test(className)) || props["data-language"];
+
+      if (isCodeBlock) {
+        // 블록 코드는 rehype-pretty-code의 스타일을 그대로 사용
         return (
-          <code className={className} {...props}>
+          <code
+            className={cn(className, "rounded-lg p-3 mb-4 mt-4")}
+            {...props}>
             {children}
           </code>
         );
       }
 
-      // 인라인 코드에만 최소한의 스타일 제공
+      // 인라인 코드는 노션 스타일 (회색 배경 + 붉은색 텍스트)
       return (
-        <code
-          className="rounded px-1.5 py-0.5 font-mono text-sm bg-green-100 dark:bg-green-900/40"
-          {...props}
-        >
+        <span
+          className="rounded px-1.5 py-1 mx-1 font-mono text-sm bg-gray-200 dark:bg-gray-700 "
+          {...props}>
           {children}
-        </code>
+        </span>
       );
     },
     img: ({ src, alt, width, height, title, ...rest }) => {
@@ -224,8 +225,7 @@ export function getMDXComponents(
                 typeof numWidth === "number" && numWidth > 0
                   ? `${numWidth}px`
                   : undefined,
-            }}
-          >
+            }}>
             <Image
               src={optimizedSrc}
               alt={alt || "이미지"}
