@@ -57,7 +57,6 @@ export async function generateMetadata({
   }
 
   const { meta } = postData;
-  // 고도화된 SEO 메타데이터 생성
   const metadata = generateCompleteMetadata(meta);
   return {
     ...metadata,
