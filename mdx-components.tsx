@@ -177,7 +177,7 @@ export function getMDXComponents(
       // 인라인 코드는 노션 스타일 (회색 배경 + 붉은색 텍스트)
       return (
         <span
-          className="rounded px-1.5 py-1 mx-1 font-mono text-sm bg-gray-200 dark:bg-gray-700 "
+          className="rounded px-1.5 py-1 mx-0.5 font-mono text-sm bg-gray-200 dark:bg-gray-700 "
           {...props}>
           {children}
         </span>
