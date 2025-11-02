@@ -114,14 +114,23 @@ body{margin:0;font-family:var(--font-sans),system-ui,sans-serif;line-height:inhe
           name="naver-site-verification"
           content="e8c1b1eec11892d4c47bfe48b7bd5d04afe84c68"
         />
+        <meta
+          name="theme-color"
+          media="(prefers-color-scheme: light)"
+          content="#ffffff"
+        />
+        <meta
+          name="theme-color"
+          media="(prefers-color-scheme: dark)"
+          content="#0B1220"
+        />
       </head>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
           nanumSquare.variable,
           nanumSquareRound.variable
-        )}
-      >
+        )}>
         {/* Web Analytics는 Lazy 로딩, Speed Insights는 기존 유지 */}
         <AnalyticsLazy />
         <SpeedInsights />
@@ -129,8 +138,7 @@ body{margin:0;font-family:var(--font-sans),system-ui,sans-serif;line-height:inhe
           attribute="class"
           defaultTheme="system"
           enableSystem
-          disableTransitionOnChange
-        >
+          disableTransitionOnChange>
           <Layout>{children}</Layout>
         </ThemeProvider>
       </body>
