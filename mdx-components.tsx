@@ -167,7 +167,7 @@ export function getMDXComponents(
         // 블록 코드는 rehype-pretty-code의 스타일을 그대로 사용
         return (
           <code
-            className={cn(className, "rounded-lg p-3 mb-4 mt-4")}
+            className={cn(className, "rounded-lg p-3 mb-4 mt-4 overflow-x-auto")}
             {...props}>
             {children}
           </code>
