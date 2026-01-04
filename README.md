@@ -19,9 +19,11 @@
 
 ## About The Project
 
-**JuLog**는 개인 블로그 및 포트폴리오 사이트입니다.
+**JULOG**는 개인 개발 블로그입니다.
 
-Notion을 CMS로 활용하여 블로그 포스트를 관리하고, MDX를 통해 풍부한 콘텐츠를 제공합니다.
+Notion을 CMS로 활용하여 블로그 포스트를 관리하고, MDX를 통해 콘텐츠를 제공합니다.
+
+[자세한 내용은 여기를 클릭 해주세요](https://blog.jongung.com/blog/tistory-to-julog)
 
 <br />
 
@@ -33,26 +35,5 @@ Notion을 CMS로 활용하여 블로그 포스트를 관리하고, MDX를 통해
 | **MDX 지원**   | 코드 하이라이팅, GFM 마크다운 확장          |
 | **다크 모드**  | next-themes 기반 테마 전환                  |
 | **SEO 최적화** | 동적 OG 이미지, sitemap, robots.txt         |
-
-<br />
-
-## 기술 스택
-
-### Frontend
-
-- **Next.js 15** + **React 19**
-- **TypeScript** - 타입 안전성
-- **TailwindCSS 4** - 스타일링
-
-### CMS
-
-- **Notion API** - 콘텐츠 관리
-- **next-mdx-remote** - MDX 렌더링
-
-### UI
-
-- **shadcn/ui** - UI 컴포넌트
-- **lucide-react** - 아이콘
-- **Pretendard 폰트** - 한글 최적화 폰트
 
 <br />
