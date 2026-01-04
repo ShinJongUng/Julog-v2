@@ -1,56 +1,58 @@
-# Julog v2
+<br />
+<div align="center">
 
-## Project setup
+  <h1 align="center">JULOG</h1>
 
-### Notion API 설정 (필수)
+  <p align="center">
+    <strong>개인 개발 블로그</strong>
+    <br />
+    <br />
+    <img src="https://skillicons.dev/icons?i=nextjs,react,ts,tailwind,notion">
+    <br />
+    <br />
+    <strong>Next.js • React • TailwindCSS • Notion API</strong>
+  </p>
 
-1. [Notion Developers](https://www.notion.so/my-integrations)에서 Integration 생성
-2. 데이터베이스 생성 후 Integration 연결
-3. 환경변수 설정:
-   ```env
-   NOTION_TOKEN=your_notion_integration_token
-   NOTION_DATABASE_ID=your_database_id
-   ```
+</div>
 
-### 댓글 기능 설정
+<br/>
 
-### Github Token 설정
+## About The Project
 
-1. Github 계정 설정에서 Developer Settings > Personal access tokens > Tokens으로 이동
-2. 새로운 토큰 생성 시 아래 권한 필요:
-   - repo:discussion
-3. 생성된 토큰을 `.env.local` 파일에 아래와 같이 설정:
-   ```
-   GITHUB_TOKEN=your_token_here
-   ```
+**JuLog**는 개인 블로그 및 포트폴리오 사이트입니다.
 
-### Giscus 설정
+Notion을 CMS로 활용하여 블로그 포스트를 관리하고, MDX를 통해 풍부한 콘텐츠를 제공합니다.
 
-1. [Giscus 앱](https://github.com/apps/giscus)을 리포지토리에 설치
-2. 해당 리포지토리의 Discussion 기능 활성화
-3. [Giscus](https://giscus.app/ko)에서 설정값 생성 후 아래 환경변수 설정:
-   ```
-   NEXT_PUBLIC_GISCUS_REPO=username/repo
-   NEXT_PUBLIC_GISCUS_REPO_ID=your_repo_id
-   NEXT_PUBLIC_GISCUS_CATEGORY=General
-   NEXT_PUBLIC_GISCUS_CATEGORY_ID=your_category_id
-   ```
+<br />
 
-### 프로젝트 실행
+## 주요 기능
 
-1. pnpm 패키지 매니저 설치
+| 기능           | 설명                                        |
+| -------------- | ------------------------------------------- |
+| **Notion CMS** | Notion 데이터베이스 기반 블로그 포스트 관리 |
+| **MDX 지원**   | 코드 하이라이팅, GFM 마크다운 확장          |
+| **다크 모드**  | next-themes 기반 테마 전환                  |
+| **SEO 최적화** | 동적 OG 이미지, sitemap, robots.txt         |
 
-   ```bash
-   npm install -g pnpm
-   ```
+<br />
 
-2. 의존성 설치
+## 기술 스택
 
-   ```bash
-   pnpm install
-   ```
+### Frontend
 
-3. 개발 서버 실행
-   ```bash
-   pnpm dev
-   ```
+- **Next.js 15** + **React 19**
+- **TypeScript** - 타입 안전성
+- **TailwindCSS 4** - 스타일링
+
+### CMS
+
+- **Notion API** - 콘텐츠 관리
+- **next-mdx-remote** - MDX 렌더링
+
+### UI
+
+- **shadcn/ui** - UI 컴포넌트
+- **lucide-react** - 아이콘
+- **Pretendard 폰트** - 한글 최적화 폰트
+
+<br />
