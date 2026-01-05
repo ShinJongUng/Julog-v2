@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { NavigationMenuLink } from "@/components/ui/navigation-menu";
 import { ThemeToggle } from "./ui/theme-toggle";
 import Image from "next/image";
+import { ExternalLink } from "lucide-react";
 
 export default function Header() {
   return (
@@ -26,12 +27,15 @@ export default function Header() {
 
         <div className="flex items-center gap-4">
           <nav className="items-center gap-4 text-sm">
-            <Link
-              href="/about"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+            <a
+              href="https://www.jongung.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
             >
               About
-            </Link>
+              <ExternalLink className="w-3 h-3" />
+            </a>
           </nav>
           <ThemeToggle />
         </div>
