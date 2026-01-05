@@ -14,6 +14,7 @@ import FloatingButtons from "@/components/lazy/FloatingButtonsLazy";
 import TableOfContentsSection from "@/components/lazy/TableOfContentsSection";
 import CommentsSection from "@/components/lazy/CommentsSection";
 import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import rehypeSlug from "rehype-slug";
 import rehypePrettyCode, { Options } from "rehype-pretty-code";
 
@@ -133,7 +134,8 @@ export default async function PostPage({ params }: PostPageProps) {
                   <Link
                     key={tag}
                     href={`/tag/${encodeURIComponent(tag.toLowerCase())}`}
-                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted hover:text-green-600 dark:hover:text-green-400 transition-colors">
+                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted hover:text-green-600 dark:hover:text-green-400 transition-colors"
+                  >
                     {tag}
                   </Link>
                 ))}
@@ -150,7 +152,7 @@ export default async function PostPage({ params }: PostPageProps) {
             components={components}
             options={{
               mdxOptions: {
-                remarkPlugins: [remarkGfm],
+                remarkPlugins: [remarkGfm, remarkBreaks],
                 rehypePlugins: [
                   rehypeSlug,
                   [rehypePrettyCode, rehypePrettyCodeOptions],

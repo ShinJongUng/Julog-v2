@@ -46,7 +46,8 @@ export function getMDXComponents(
           {...(isExternal
             ? { target: "_blank", rel: "noopener noreferrer" }
             : {})}
-          {...props}>
+          {...props}
+        >
           {children}
         </a>
       );
@@ -59,7 +60,8 @@ export function getMDXComponents(
           fontWeight: "bold",
           marginTop: "1.5rem",
           marginBottom: "1rem",
-        }}>
+        }}
+      >
         {children}
       </h1>
     ),
@@ -71,7 +73,8 @@ export function getMDXComponents(
           fontWeight: "bold",
           marginTop: "1.5rem",
           marginBottom: "1rem",
-        }}>
+        }}
+      >
         {children}
       </h2>
     ),
@@ -83,7 +86,8 @@ export function getMDXComponents(
           fontWeight: "bold",
           marginTop: "1.5rem",
           marginBottom: "1rem",
-        }}>
+        }}
+      >
         {children}
       </h3>
     ),
@@ -126,7 +130,8 @@ export function getMDXComponents(
           listStyle: "disc",
           marginLeft: "1.5rem",
           marginBottom: "1rem",
-        }}>
+        }}
+      >
         {children}
       </ul>
     ),
@@ -136,7 +141,8 @@ export function getMDXComponents(
           listStyle: "decimal",
           marginLeft: "1.5rem",
           marginBottom: "1rem",
-        }}>
+        }}
+      >
         {children}
       </ol>
     ),
@@ -153,7 +159,8 @@ export function getMDXComponents(
           fontStyle: "italic",
           color: "#666",
           margin: "1.5rem 0",
-        }}>
+        }}
+      >
         {children}
       </blockquote>
     ),
@@ -167,8 +174,12 @@ export function getMDXComponents(
         // 블록 코드는 rehype-pretty-code의 스타일을 그대로 사용
         return (
           <code
-            className={cn(className, "rounded-lg p-3 mb-4 mt-4 overflow-x-auto")}
-            {...props}>
+            className={cn(
+              className,
+              "rounded-lg p-3 mb-4 mt-4 overflow-x-auto"
+            )}
+            {...props}
+          >
             {children}
           </code>
         );
@@ -178,7 +189,8 @@ export function getMDXComponents(
       return (
         <span
           className="rounded px-1.5 py-1 mx-0.5 font-mono text-sm bg-gray-200 dark:bg-gray-700 "
-          {...props}>
+          {...props}
+        >
           {children}
         </span>
       );
@@ -225,7 +237,8 @@ export function getMDXComponents(
                 typeof numWidth === "number" && numWidth > 0
                   ? `${numWidth}px`
                   : undefined,
-            }}>
+            }}
+          >
             <Image
               src={optimizedSrc}
               alt={alt || "이미지"}
@@ -264,6 +277,7 @@ export function getMDXComponents(
       </th>
     ),
     td: ({ children }) => <td className="px-4 py-2 border">{children}</td>,
+    br: () => <br className="block h-[1.5em]" />,
     table: ({ children }) => (
       <div className="overflow-x-auto mb-6">
         <table className="w-full border-collapse border border-gray-300">

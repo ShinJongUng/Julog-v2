@@ -39,13 +39,30 @@ n2m.setCustomTransformer("image", async (block) => {
       fileNameFromUrl(link) || (caption ? `${caption}.png` : "image");
     const proxy = getProxyImageUrl(blockId, fileName);
     const alt = caption || fileName || "image";
-    const title = caption ? ` \"${caption.replace(/\"/g, '\\"')}\"` : "";
+    const title = caption ? ` \"${caption.replace(/"/g, '\\"')}\"` : "";
     // Markdown 이미지에 title을 넣어 MDX 컴포넌트에서 캡션으로 사용
     return `![${alt}](${proxy}${title})`;
   } catch (e) {
     console.error("image transformer error", e);
     return "";
   }
+});
+
+// 빈 paragraph 블록을 빈 줄로 변환하여 여러 줄 바꿈 지원
+n2m.setCustomTransformer("paragraph", async (block) => {
+  const paragraphBlock = block as BlockObjectResponse & {
+    paragraph?: { rich_text: Array<{ plain_text: string }> };
+  };
+  const richText = paragraphBlock.paragraph?.rich_text || [];
+  const text = richText.map((t) => t.plain_text || "").join("");
+
+  // 빈 paragraph는 빈 줄을 나타내므로 &nbsp;를 반환
+  if (text.trim() === "") {
+    return "&nbsp;";
+  }
+
+  // 일반 텍스트는 기본 변환 사용 (false 반환)
+  return false;
 });
 
 // Notion 데이터베이스 ID (환경변수에서 가져옴)
